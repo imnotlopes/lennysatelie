@@ -1,0 +1,440 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   LENNY'S ATELIE — Design tokens
+
+   Identidade final: paleta #FAF8F6 / #EEBAB1 / #312929.
+   Tipografia mantida: Karla na interface, Marcellus nos titulos.
+   Linhas finas, poucas sombras, muito branco, botao discreto, layout editorial.
+
+   Camada 1: primitivas em :root (nao geram utilitario)
+   Camada 2: semantica em @theme (geram utilitario Tailwind)
+
+   Componentes usam SEMPRE a camada semantica.
+   ========================================================================== */
+
+:root {
+  /* ---- Primitivas da marca ---- */
+  --cream: #faf8f6; /* fundo */
+  --rose: #eebab1; /* acento */
+  --ink: #312929; /* texto */
+
+  /* ---- Neutros derivados do fundo e da tinta ---- */
+  --cream-alt: #f1ebe4; /* faixa/bloco alternado — areia, nao bege rosado */
+  --pure-white: #ffffff; /* card, modal */
+  --line-soft: #e4dbd5; /* traco fino, separador (decorativo) */
+
+  /* Borda de campo e de botao. O #d9cfc9 anterior dava 1.44:1 sobre o fundo
+     e reprovava o minimo de 3:1 que o WCAG 1.4.11 exige para o contorno de um
+     controle: quem enxerga pouco nao achava onde clicar. Este da 3.56:1. */
+  --line-firm: #8d817e;
+  --ink-60: #6b5f5c; /* texto de apoio */
+  --ink-40: #9b8f8b; /* texto apagado, preco riscado */
+
+  /* ---- Rose escuro ----
+     O #EEBAB1 tem 1.61:1 sobre o fundo: reprova como cor de texto. Este tom
+     mantem o matiz e chega a 5.05:1, que passa AA. Use para rose em TEXTO,
+     hover e anel de foco. O #EEBAB1 fica para preenchimento, sempre com
+     texto escuro por cima (8.31:1). */
+  --rose-deep: #816460;
+
+  /* ---- Estado ---- */
+  --state-success: #3f6b52;
+  --state-error: #a3352b;
+}
+
+@theme inline {
+  /* ---- Superficie ---- */
+  --color-surface: var(--cream);
+  --color-surface-alt: var(--cream-alt);
+  --color-surface-raised: var(--pure-white);
+
+  /* ---- Traco ---- */
+  --color-line: var(--line-soft);
+  --color-line-strong: var(--line-firm);
+
+  /* ---- Texto ---- */
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-60);
+  --color-ink-faded: var(--ink-40);
+  --color-ink-inverse: var(--pure-white);
+
+  /* ---- Acento ----
+     `accent` preenche. `accent-ink` escreve. Trocar um pelo outro derruba o
+     contraste, por isso sao dois tokens e nao um. */
+  --color-accent: var(--rose);
+  --color-accent-ink: var(--rose-deep);
+  --color-accent-soft: var(--cream-alt);
+
+  /* ---- Estado ---- */
+  --color-success: var(--state-success);
+  --color-error: var(--state-error);
+  --color-disabled: var(--line-firm);
+}
+
+@theme {
+  /* ---- Tipografia ----
+     Karla na interface, Marcellus nos titulos. */
+  --font-sans: var(--font-karla), Helvetica, Arial, sans-serif;
+  --font-display: var(--font-marcellus), Georgia, serif;
+
+  /* A escala inteira subiu um degrau. Antes 80% do site vivia em 11 ou 12px:
+     corpo, navegacao, preco, botao e legenda no mesmo tamanho miudo, sem
+     hierarquia nenhuma. Os nomes dos tokens continuam iguais de proposito —
+     a intencao no codigo ("o menor", "o pequeno") nao mudou, so a medida. */
+  --text-2xs: 0.75rem; /* 12px — nota de rodape, so isso */
+  --text-xs: 0.875rem; /* 14px — corpo, nav, preco, botoes */
+  --text-sm: 0.9375rem; /* 15px — titulo de produto */
+  --text-base: 1.0625rem; /* 17px — texto corrido longo */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.3125rem; /* 21px */
+
+  /* ---- Titulos de display: escala fluida ----
+     Antes eram tres valores fixos e o titulo pulava de degrau no breakpoint.
+     Agora crescem junto com a janela, sem salto.
+
+     A parte em `rem` de cada clamp existe de proposito: e o que mantem o
+     titulo respondendo a quem aumentou o tamanho de fonte no navegador. A
+     referencia que estudamos derivava a fonte so de `vw`, e nesse caso quem
+     enxerga pouco aumenta a letra e nao acontece nada.
+
+     Os limites sao os tamanhos antigos: o minimo e o que ja existia no
+     celular, o maximo e o que ja existia no desktop. Nada encolheu. */
+  --text-display-sm: clamp(1.5rem, 1.25rem + 1.1vw, 1.75rem); /* 24 a 28px */
+  --text-display-md: clamp(1.875rem, 1.3rem + 2.6vw, 2.5rem); /* 30 a 40px */
+  --text-display-lg: clamp(2.25rem, 1.3rem + 4.2vw, 3.5rem); /* 36 a 56px */
+
+  --tracking-default: 0.3px;
+  --tracking-wide: 0.6px;
+  --tracking-caps: 1.2px;
+
+  --leading-tight: 1.2;
+  --leading-base: 1.7;
+
+  /* ---- Espacamento: base 5px ---- */
+  --spacing: 5px;
+
+  /* ---- Geometria: cantos vivos, linha fina ---- */
+  --radius-none: 0px;
+
+  /* ---- Layout ---- */
+  --container-content: 1145px;
+  --aspect-product: 2 / 3;
+
+  /* ---- Movimento ----
+     `brand` e `soft` sao curvas simetricas, boas para hover e troca de cor.
+     `entrada` desacelera forte no fim: o elemento chega rapido e assenta
+     devagar, que e o que faz uma revelacao parecer natural em vez de
+     mecanica. Usar so para coisa que aparece, nunca para hover. */
+  --ease-brand: cubic-bezier(0.645, 0.045, 0.355, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Curvas de revelacao. Equivalem as que a referencia usa no GSAP:
+     `entrada` e o power3.out dos titulos, `foto` e o power2.out das imagens.
+
+     NAO usar a cubic-bezier(0.16, 1, 0.3, 1) daqui. Ela e a curva de hover da
+     referencia, feita para 0.3s: esticada para 1.4s, 82% do movimento acaba
+     nos primeiros 250ms e o resto rasteja invisivel. Ja tentei. */
+  --ease-entrada: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-foto: cubic-bezier(0.33, 1, 0.68, 1);
+
+  /* ---- Breakpoints ---- */
+  --breakpoint-sm: 568px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1025px;
+  --breakpoint-xl: 1441px;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    /* Os paineis off-canvas ficam fora da viewport quando fechados e criariam
+       rolagem horizontal. `clip` corta sem virar contexto de rolagem, entao o
+       header `sticky` continua funcionando — `hidden` quebraria. */
+    overflow-x: clip;
+  }
+
+  body {
+    overflow-x: clip;
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-default);
+    line-height: var(--leading-base);
+  }
+
+  /* Foco de teclado sempre visivel. Usa o rose escuro: o claro nao apareceria
+     sobre o fundo creme. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent-ink);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-ink);
+  }
+
+  ::placeholder {
+    color: var(--color-ink-muted);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   Simbolo da marca (components/layout/logo.tsx)
+
+   Usado como mascara, nao como imagem: o desenho assume a cor do texto do
+   contexto. No header transparente sobre o hero ele fica claro; no header
+   solido e no rodape, escuro.
+   ========================================================================== */
+
+.marca-simbolo {
+  background-color: currentColor;
+  mask-image: url("/marca/simbolo.png");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url("/marca/simbolo.png");
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+/* ==========================================================================
+   Slider duplo de faixa de preco (components/acervo/faixa-preco.tsx)
+
+   Os dois input[type=range] ficam sobrepostos no mesmo trilho. O input em si
+   nao recebe ponteiro; so o thumb recebe.
+   ========================================================================== */
+
+.faixa-preco__controle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+}
+
+.faixa-preco__controle:focus-visible {
+  outline: none;
+}
+
+.faixa-preco__controle::-webkit-slider-thumb {
+  appearance: none;
+  pointer-events: auto;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1px solid var(--color-ink);
+  background: var(--color-surface-raised);
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease-brand);
+}
+
+.faixa-preco__controle::-moz-range-thumb {
+  pointer-events: auto;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1px solid var(--color-ink);
+  background: var(--color-surface-raised);
+  cursor: pointer;
+}
+
+.faixa-preco__controle:hover::-webkit-slider-thumb,
+.faixa-preco__controle:focus-visible::-webkit-slider-thumb {
+  border-color: var(--color-accent-ink);
+  box-shadow: 0 0 0 2px var(--color-accent);
+}
+
+.faixa-preco__controle:hover::-moz-range-thumb,
+.faixa-preco__controle:focus-visible::-moz-range-thumb {
+  border-color: var(--color-accent-ink);
+  box-shadow: 0 0 0 2px var(--color-accent);
+}
+
+/* ==========================================================================
+   Revelação ao entrar na tela
+
+   O JavaScript faz uma coisa só: marcar `data-visivel` quando o elemento
+   entra na tela. Todo o movimento é CSS, e acontece uma vez — repetir a cada
+   rolagem cansa quem só quer descer a página.
+
+   Sem JavaScript, ou se o observador falhar, o estado final é o mesmo: o
+   `:where(...)` abaixo tem especificidade zero, então basta o navegador não
+   aplicar a transição para tudo aparecer normal.
+   ========================================================================== */
+
+/* --- Foto saindo do zoom --- */
+[data-revelar="zoom"] {
+  overflow: hidden;
+}
+
+/* A marca `data-revelacao` no <html> vem de um script embutido no layout. Sem
+   ela nada abaixo se esconde, e o site aparece inteiro — foi assim que um
+   titulo sumiu quando o JavaScript falhou: as palavras ficavam deslocadas
+   dentro da janela esperando um observador que nunca chegou. */
+
+/* A camada de hover fica de fora: ela tem transform proprio, e duas regras
+   disputando `transform` no mesmo elemento se anulam — a de maior
+   especificidade ganha e a outra simplesmente nao acontece. */
+[data-revelacao="ativa"] [data-revelar="zoom"] > *:not(.card-foto-hover) {
+  transform: scale(1.08);
+  transition: transform 1.2s var(--ease-foto);
+}
+
+[data-revelar="zoom"][data-visivel="true"] > * {
+  transform: scale(1);
+}
+
+/* --- Título revelado palavra por palavra ---
+   Cada palavra é uma janela com `overflow: hidden` e a palavra de dentro
+   começa abaixo dela. A defasagem vem de `--i`, que o servidor escreve em
+   cada palavra: sem JavaScript nenhum para calcular atraso. */
+.palavra {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  /* O descendente de letras como "g" e "ç" seria cortado pelo overflow. */
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+
+.palavra__interior {
+  display: inline-block;
+}
+
+[data-revelacao="ativa"] .palavra__interior {
+  transform: translateY(110%);
+  transition: transform 0.9s var(--ease-entrada);
+  /* 60ms em vez dos 40ms da referencia: com a curva mais suave, 40ms fazia as
+     palavras subirem quase juntas e a cascata sumia. */
+  transition-delay: calc(var(--i, 0) * 60ms);
+}
+
+[data-visivel="true"] .palavra__interior {
+  transform: translateY(0);
+}
+
+/* Quem pediu menos movimento vê o resultado, não o caminho. A regra geral de
+   `prefers-reduced-motion` lá em cima já zera a duração, mas o estado inicial
+   deslocado continuaria valendo até o observador disparar — e se ele nunca
+   disparar, o título ficaria invisível. Aqui o ponto de partida some. */
+@media (prefers-reduced-motion: reduce) {
+  [data-revelar="zoom"] > *,
+  .palavra__interior {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ==========================================================================
+   Hero que se reveza entre três fotos
+
+   Só CSS. Três camadas empilhadas, cada uma acesa por 6s dentro de um ciclo
+   de 18s, com a defasagem feita por `animation-delay`. Sem JavaScript não há
+   estado para hidratar, nada para o observador marcar, e a primeira foto
+   continua sendo o LCP.
+
+   A base é `opacity: 0`: antes de a animação começar, a camada não aparece.
+   A primeira parte em 1 porque a animação dela arranca em zero segundo.
+   ========================================================================== */
+
+.hero-foto {
+  opacity: 0;
+  animation: hero-reveza 18s infinite;
+}
+
+.hero-foto:nth-child(2) {
+  animation-delay: 6s;
+}
+
+.hero-foto:nth-child(3) {
+  animation-delay: 12s;
+}
+
+@keyframes hero-reveza {
+  0% { opacity: 1; }
+  28% { opacity: 1; }
+  36% { opacity: 0; }
+  92% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Sem movimento: fica na primeira e pronto. A regra geral de
+   `prefers-reduced-motion` zera a duração da animação, o que congelaria todas
+   em opacidade 1 e empilharia as três — por isso aqui é explícito. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-foto {
+    animation: none;
+    opacity: 0;
+  }
+
+  .hero-foto:first-child {
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   Segunda foto no hover do card
+
+   Copiado da referência Peguei da Sophie, que faz melhor que a nossa versão
+   anterior: lá a foto não só aparece, ela avança.
+
+   O truque são os dois tempos deliberadamente diferentes. A opacidade resolve
+   em 0.5s, então a troca é imediata; a escala leva 2s para ir a 1.09, então a
+   imagem continua se aproximando enquanto o ponteiro fica parado. A curva
+   termina em 1.18, acima de 1, o que faz o zoom passar um pouco do ponto e
+   voltar — é isso que dá a sensação de coisa viva em vez de interpolação.
+
+   Some abaixo de 1025px: em tela de toque o estado de hover gruda depois do
+   toque, e a cliente fica com a segunda foto presa até tocar em outro lugar.
+   ========================================================================== */
+
+[data-revelar="zoom"] > .card-foto-hover {
+  opacity: 0;
+  transform: scale(1);
+  transition:
+    opacity 0.5s var(--ease-soft),
+    transform 2s cubic-bezier(0, 0, 0.44, 1.18);
+}
+
+@media (min-width: 1025px) {
+  .group:hover [data-revelar="zoom"] > .card-foto-hover,
+  [data-revelar="zoom"]:hover > .card-foto-hover {
+    opacity: 1;
+    transform: scale(1.09);
+  }
+}
+
+@media (max-width: 1024px) {
+  .card-foto-hover {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-foto-hover {
+    display: none;
+  }
+}

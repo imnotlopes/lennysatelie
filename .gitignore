@@ -1,0 +1,57 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Fotos originais do ateliê: pesadas e ja versionadas no Storage
+imagens-atelie/**
+!imagens-atelie/LEIA-ANTES.md
+!imagens-atelie/*/LEIA.txt
+
+# Fotos vindas do Instagram: sao de clientes reais e identificaveis. Ficam
+# fora do repositorio pelo mesmo motivo das de imagens-atelie — publicar em
+# outro lugar, permanente e fora do controle do atelie, nao e nossa decisao.
+# As que o site usa foram tratadas e estao em public/fotos.
+/instagram/
+
+# Copias dos sites de referencia estudados (Free People, Ballena, Sophie).
+# Material de terceiros, pesado e sem valor para quem clonar o projeto.
+/referencia/

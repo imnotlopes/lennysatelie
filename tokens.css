@@ -1,0 +1,132 @@
+/* ==========================================================================
+   LENNYS ATELIÊ — Design Tokens
+   Estrutura derivada do sistema da Free People (ver DESIGN-SYSTEM.md).
+   Enxugado de 435 para ~55 tokens semânticos.
+
+   ⚠️ PENDENTE DE DEFINIÇÃO — ver §8 do DESIGN-SYSTEM.md:
+      1. --accent-*  → hoje está com o rosa da Free People, apenas como placeholder
+      2. --font-display → escolher a serifada de títulos
+   ========================================================================== */
+
+:root {
+  /* ---------- Primitivas: cor ----------
+     Guardadas como tripla RGB para permitir rgba(var(--x), .5) sem duplicar o token. */
+
+  /* Neutros quentes (fundos) */
+  --creme-light:  254, 251, 250;   /* #FEFBFA — fundo do site */
+  --creme:        250, 242, 237;   /* #FAF2ED — fundo secundário */
+  --creme-dark:   237, 230, 224;   /* #EDE6E0 — bordas e separadores */
+  --white:        255, 255, 255;   /* #FFFFFF */
+
+  /* Neutros escuros (texto e controles) */
+  --stone-dark:   37, 36, 35;      /* #252423 — texto principal */
+  --stone-medium: 124, 112, 110;   /* #7C706E — placeholder */
+  --stone:        153, 143, 138;   /* #998F8A — texto apagado */
+  --stone-light:  214, 208, 203;   /* #D6D0CB — bordas de input, disabled */
+
+  /* Acento — PLACEHOLDER, trocar pela identidade da Lennys */
+  --accent:       213, 41, 117;    /* #D52975 */
+  --accent-soft:  255, 175, 175;   /* #FFAFAF */
+
+  /* Estado */
+  --green:        5, 117, 85;      /* #057555 */
+  --red:          208, 19, 2;      /* #D01302 */
+
+  /* ---------- Semântica: superfície ---------- */
+  --site-bg:            rgb(var(--creme-light));
+  --site-bg-secondary:  rgb(var(--creme));
+  --surface:            rgb(var(--white));
+  --overlay:            rgba(var(--creme), .85);
+
+  /* ---------- Semântica: texto ---------- */
+  --text:               rgb(var(--stone-dark));
+  --text-muted:         rgb(var(--stone-medium));
+  --text-faded:         rgb(var(--stone));
+  --text-inverse:       rgb(var(--white));
+
+  /* ---------- Semântica: traço ---------- */
+  --border:             rgb(var(--creme-dark));
+  --border-strong:      rgb(var(--stone-light));
+  --border-selected:    rgb(var(--stone-dark));
+  --separator:          rgb(var(--creme-dark));
+
+  /* ---------- Semântica: interação ----------
+     Regra do sistema: repouso = --text, hover/foco/selecionado = --accent. */
+  --link:               rgb(var(--stone-dark));
+  --link-hover:         rgb(var(--accent));
+  --link-selected:      rgb(var(--accent));
+  --focus-ring:         rgb(var(--accent));
+
+  /* ---------- Semântica: preço ---------- */
+  --price:              rgb(var(--stone-dark));
+  --price-sale:         rgb(var(--accent));
+  --price-original:     rgb(var(--stone));
+
+  /* ---------- Semântica: estado ---------- */
+  --success:            rgb(var(--green));
+  --error:              rgb(var(--red));
+  --disabled-bg:        rgb(var(--stone-light));
+  --disabled-text:      rgb(var(--stone-dark));
+
+  /* ---------- Tipografia ---------- */
+  --font-body:    'Karla', Helvetica, Arial, sans-serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif;  /* ⚠️ a definir */
+
+  --fs-xs:  0.6875rem;  /* 11px — legendas */
+  --fs-sm:  0.75rem;    /* 12px — corpo, nav, preço na grade, botões */
+  --fs-md:  0.875rem;   /* 14px — título de produto, acordeão */
+  --fs-lg:  1.125rem;   /* 18px — preço na PDP, subtítulo */
+  --fs-xl:  1.3125rem;  /* 21px — h1 */
+
+  --fw-regular: 400;
+  --fw-bold:    700;    /* só existem estes dois pesos */
+
+  --ls-default:   0.3px;   /* padrão universal */
+  --ls-wide:      0.6px;   /* acordeão, nav secundário */
+  --ls-uppercase: 1.2px;   /* botões */
+
+  --lh-tight:  1.2;
+  --lh-base:   1.7;     /* 23.8px sobre 14px — título de produto e texto corrido */
+
+  /* ---------- Espaçamento (base 5) ---------- */
+  --sp-1:  5px;
+  --sp-2:  10px;   /* unidade dominante */
+  --sp-3:  15px;
+  --sp-4:  20px;   /* gutter de grade, padding de botão */
+  --sp-6:  30px;   /* margem inferior do tile */
+  --sp-12: 60px;   /* respiro entre seções, gutter lateral desktop */
+
+  /* ---------- Geometria ---------- */
+  --radius:        0;      /* cantos vivos em todo o sistema */
+  --radius-round:  50%;    /* única exceção: swatches de cor */
+  --border-width:  1px;
+
+  /* ---------- Movimento ---------- */
+  --ease:          cubic-bezier(0.645, 0.045, 0.355, 1);
+  --ease-soft:     cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast:      .15s;
+  --dur-base:      .2s;
+  --dur-slow:      .3s;
+
+  /* ---------- Layout ---------- */
+  --content-max:   1145px;
+  --gutter:        var(--sp-12);
+  --gutter-mobile: var(--sp-4);
+  --grid-gap:      var(--sp-4);
+  --grid-gap-mobile: var(--sp-1);
+  --product-ratio: 2 / 3;   /* proporção da foto de produto */
+
+  /* ---------- Componentes ---------- */
+  --control-height:  45px;   /* botões */
+  --size-swatch:     36px;   /* swatch de cor */
+  --size-option:     38px;   /* seletor de tamanho */
+}
+
+/* ==========================================================================
+   Breakpoints (para referência — CSS custom properties não funcionam em @media)
+
+   Mobile   : até 767px      → grade de 2 colunas, gap 5px
+   Tablet   : 768px – 1024px → grade de 2–3 colunas
+   Desktop  : a partir de 1025px → grade de 3 colunas, gap 20px
+   Wide     : a partir de 1441px
+   ========================================================================== */
