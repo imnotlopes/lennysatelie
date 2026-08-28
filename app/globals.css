@@ -120,6 +120,7 @@
   /* ---- Layout ---- */
   --container-content: 1145px;
   --aspect-product: 2 / 3;
+  --aspect-9\/16: 9 / 16; /* story e reel */
 
   /* ---- Movimento ----
      `brand` e `soft` sao curvas simetricas, boas para hover e troca de cor.

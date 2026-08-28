@@ -1,10 +1,11 @@
 import { CategoriasGrid } from "@/components/home/categorias-grid";
 import { ComoFunciona } from "@/components/home/como-funciona";
-import { Depoimentos } from "@/components/secoes/depoimentos";
+import { FeedbacksComImagem, FeedbacksPorMensagem } from "@/components/secoes/feedbacks";
 import { Destaques } from "@/components/home/destaques";
 import { FaixaWhatsapp } from "@/components/home/faixa-whatsapp";
 import { Hero } from "@/components/home/hero";
 import { LocalBusinessJsonLd } from "@/components/seo/local-business";
+import { SecaoVideos } from "@/components/secoes/videos";
 import { SITE } from "@/lib/admin/site";
 import { getConfiguracoes } from "@/lib/queries";
 import type { Metadata } from "next";
@@ -43,7 +44,9 @@ export default async function HomePage() {
       <CategoriasGrid />
       <Destaques />
       <ComoFunciona />
-      <Depoimentos />
+      <FeedbacksComImagem />
+      <SecaoVideos contato={contato} />
+      <FeedbacksPorMensagem />
       <FaixaWhatsapp />
     </main>
   );

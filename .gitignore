@@ -55,3 +55,7 @@ imagens-atelie/**
 # Copias dos sites de referencia estudados (Free People, Ballena, Sophie).
 # Material de terceiros, pesado e sem valor para quem clonar o projeto.
 /referencia/
+
+# Material de origem dos feedbacks: prints de conversa e artes de story. As
+# versoes que o site serve estao tratadas em public/fotos/feedbacks.
+/relatos e feedbacks/
