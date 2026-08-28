@@ -53,16 +53,20 @@ banco, não em esconder a chave.
 1. Em [vercel.com](https://vercel.com), **Add New > Project** e importe o
    repositório
 2. Framework: **Next.js** (detectado sozinho)
-3. Em **Environment Variables**, cole as duas variáveis acima, marcando
+3. Em **Environment Variables**, cole as três variáveis acima, marcando
    Production, Preview e Development
 4. **Deploy**
 
-Depois do primeiro deploy, em **Settings > Domains**, aponte o domínio
-definitivo.
+No primeiro deploy você ainda não sabe o endereço, então ponha um palpite em
+`NEXT_PUBLIC_SITE_URL` e corrija depois: a Vercel mostra a URL final ao
+terminar. Trocar a variável e clicar em **Redeploy** resolve.
 
-> **Ao trocar o domínio, mude também `lib/admin/site.ts`.** É de lá que saem o
-> canonical, o sitemap, o Open Graph e o link do cupom que vai para a
-> influenciadora. Com o valor errado, o Google indexa endereço que não existe.
+Depois, em **Settings > Domains**, aponte o domínio definitivo — e **volte na
+variável** para o endereço novo.
+
+> É de `NEXT_PUBLIC_SITE_URL` que saem o canonical, o sitemap, o Open Graph e
+> o link do cupom que vai para a influenciadora. Com o valor errado, o Google
+> indexa endereço que não existe. Nenhum código muda: só a variável.
 
 ## 4. Criar o acesso da dona
 
@@ -96,8 +100,14 @@ Toda página lê o cookie do cupom de influenciadora, e `cookies()` é API
 dinâmica no Next. Isso custa a geração estática, e foi uma escolha: desconto
 por visitante não cabe numa página em cache.
 
-Se um dia o custo incomodar, o caminho é aplicar o cupom no cliente e aceitar
-um piscar do preço cheio antes do desconto.
+O que **não** se paga por isso é a consulta ao banco. `getConfiguracoes()`
+está em cache por tag (`configuracoes`), invalidado com `updateTag` quando a
+dona salva no painel. Sem isso, cada carregamento de cada página relia o mesmo
+telefone e o mesmo endereço: medido em produção, o TTFB da home caiu de 1336ms
+para 22ms.
+
+Se um dia o custo da renderização dinâmica incomodar, o caminho é aplicar o
+cupom no cliente e aceitar um piscar do preço cheio antes do desconto.
 
 ### Slug de vestido inexistente responde 200, não 404
 
