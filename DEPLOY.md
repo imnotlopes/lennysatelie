@@ -10,20 +10,36 @@ a dona do ateliê — o manual dela é o `MANUAL.md`.
 | | |
 |---|---|
 | Projeto Supabase | `qfnbcdlrvhesdehjbudw`, região São Paulo |
-| Migrations aplicadas | `001_schema` · `002_preco_original` · `preco_locacao` nulo · grant do nome da influenciadora |
+| Migrations aplicadas | `001_schema` · `002_preco_original` · `003_cupom_inicio` · `preco_locacao` nulo · grant do nome da influenciadora · fuso da validade do cupom |
 | Bucket | `produtos`, público |
 | Usuário do painel | criado à mão (ver seção 4) |
 
 ## 2. Variáveis de ambiente
 
-Só duas, e as duas são públicas por natureza:
+Três, e as três são públicas por natureza:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://qfnbcdlrvhesdehjbudw.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<chave anon do painel do Supabase>
+NEXT_PUBLIC_SITE_URL=<endereço do site, sem barra no fim>
 ```
 
-Pegue em **Project Settings > API**.
+As duas primeiras pegue em **Project Settings > API**.
+
+A terceira é o endereço público. **No primeiro deploy o domínio ainda não
+existe**, então use o que a Vercel deu:
+
+```
+NEXT_PUBLIC_SITE_URL=https://lennysatelie.vercel.app
+```
+
+Sem ela, o site assume `https://lennysatelie.com.br`. Enquanto esse domínio
+não estiver apontando para a Vercel, o canonical de toda página, o sitemap
+inteiro e o link de cupom que a dona copia do painel apontam para um endereço
+que não resolve — e o Google indexa o canonical, não a página onde ele está.
+
+Quando o domínio entrar, troque a variável e refaça o deploy. Nenhuma linha de
+código muda.
 
 **Nunca coloque a `service_role` aqui.** Ela ignora toda a Row Level Security,
 e o prefixo `NEXT_PUBLIC_` a exporia no JavaScript do navegador. Se ela vazar,
