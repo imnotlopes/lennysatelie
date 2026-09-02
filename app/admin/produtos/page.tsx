@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { estilosBotao } from "@/components/ui";
 import { TabelaProdutos } from "@/components/admin/tabela-produtos";
+import { getEtiquetas } from "@/lib/queries";
 import { getCategoriasAdmin, getProdutosAdmin } from "@/lib/queries/admin";
 
 export default async function ProdutosAdminPage() {
-  const [produtos, categorias] = await Promise.all([
+  const [produtos, categorias, etiquetas] = await Promise.all([
     getProdutosAdmin(),
     getCategoriasAdmin(),
+    getEtiquetas(),
   ]);
 
   return (
@@ -17,7 +19,8 @@ export default async function ProdutosAdminPage() {
             Vestidos
           </h1>
           <p className="text-xs text-ink-muted">
-            Ligue e desligue direto na tabela. A mudança vale no site na hora.
+            Ligue, desligue e etiquete direto na tabela. A mudança vale no
+            site na hora.
           </p>
         </div>
 
@@ -29,7 +32,11 @@ export default async function ProdutosAdminPage() {
         </Link>
       </header>
 
-      <TabelaProdutos produtos={produtos} categorias={categorias} />
+      <TabelaProdutos
+        produtos={produtos}
+        categorias={categorias}
+        etiquetas={etiquetas.map((e) => e.texto)}
+      />
     </main>
   );
 }

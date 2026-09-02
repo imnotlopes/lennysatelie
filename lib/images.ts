@@ -95,5 +95,24 @@ export function imagemCategoria(
   if (!ACERVO_TEM_FOTOS || !imagemCapa) {
     return PLACEHOLDER_CATEGORIA[slug] ?? PLACEHOLDER_CATEGORIA.festa;
   }
-  return imagemCapa.startsWith("http") ? imagemCapa : urlDoBucket(imagemCapa);
+  // Mesmas duas formas de `urlDaMidia`: caminho que começa com barra veio
+  // junto com o código, o resto está no bucket.
+  return urlDaMidia(imagemCapa);
+}
+
+/**
+ * URL de uma mídia do site (hero, feedback, reel).
+ *
+ * Aceita duas formas, e a distinção importa:
+ *   `/fotos/algo.webp`  veio junto com o código, servido de /public
+ *   `site/algo.webp`    foi enviado pelo painel, mora no bucket
+ *
+ * As duas convivem porque as imagens que já estavam no ar não precisaram ser
+ * reenviadas para virarem editáveis. Quando a dona trocar uma, a nova entra
+ * pelo bucket e a antiga simplesmente deixa de ser referenciada.
+ */
+export function urlDaMidia(arquivo: string): string {
+  if (arquivo.startsWith("http")) return arquivo;
+  if (arquivo.startsWith("/")) return arquivo;
+  return urlDoBucket(arquivo);
 }

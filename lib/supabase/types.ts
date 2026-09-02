@@ -34,6 +34,8 @@ export interface Database {
           nome: string;
           slug: string;
           imagem_capa: string | null;
+          /** Foto larga do topo da coleção. Vazia cai na imagem_capa. */
+          imagem_hero: string | null;
           ordem: number;
         };
         Insert: {
@@ -41,6 +43,7 @@ export interface Database {
           nome: string;
           slug: string;
           imagem_capa?: string | null;
+          imagem_hero?: string | null;
           ordem?: number;
         };
         Update: {
@@ -48,6 +51,7 @@ export interface Database {
           nome?: string;
           slug?: string;
           imagem_capa?: string | null;
+          imagem_hero?: string | null;
           ordem?: number;
         };
         Relationships: [];
@@ -63,6 +67,7 @@ export interface Database {
           preco_original: number | null;
           tamanho: string[];
           cor: string | null;
+          etiqueta: string | null;
           categoria_id: string | null;
           imagens: string[];
           destaque: boolean;
@@ -79,6 +84,7 @@ export interface Database {
           preco_original?: number | null;
           tamanho?: string[];
           cor?: string | null;
+          etiqueta?: string | null;
           categoria_id?: string | null;
           imagens?: string[];
           destaque?: boolean;
@@ -95,6 +101,7 @@ export interface Database {
           preco_original?: number | null;
           tamanho?: string[];
           cor?: string | null;
+          etiqueta?: string | null;
           categoria_id?: string | null;
           imagens?: string[];
           destaque?: boolean;
@@ -199,6 +206,62 @@ export interface Database {
         ];
       };
 
+      midias: {
+        Row: {
+          id: string;
+          tipo: TipoMidia;
+          arquivo: string;
+          texto_alt: string | null;
+          url: string | null;
+          ordem: number;
+          ativo: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tipo: TipoMidia;
+          arquivo: string;
+          texto_alt?: string | null;
+          url?: string | null;
+          ordem?: number;
+          ativo?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tipo?: TipoMidia;
+          arquivo?: string;
+          texto_alt?: string | null;
+          url?: string | null;
+          ordem?: number;
+          ativo?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+
+      etiquetas: {
+        Row: {
+          id: string;
+          texto: string;
+          ordem: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          texto: string;
+          ordem?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          texto?: string;
+          ordem?: number;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+
       configuracoes: {
         Row: { chave: string; valor: Json };
         Insert: { chave: string; valor?: Json };
@@ -230,6 +293,23 @@ export type Configuracao = Database["public"]["Tables"]["configuracoes"]["Row"];
  * influenciadora divulga o código publicamente de qualquer forma. Já
  * `influenciadora_instagram` segue bloqueado pelo GRANT na migration.
  */
+/** Onde a mídia aparece no site. */
+export type TipoMidia =
+  | "hero"
+  | "feedback_imagem"
+  | "feedback_mensagem"
+  | "reel";
+
+export type Midia = Database["public"]["Tables"]["midias"]["Row"];
+
+/**
+ * Uma sugestão de etiqueta do catálogo do painel.
+ *
+ * Não é a etiqueta da peça: essa é o texto solto em `produtos.etiqueta`.
+ * Apagar daqui não tira o selo de nenhuma peça.
+ */
+export type Etiqueta = Database["public"]["Tables"]["etiquetas"]["Row"];
+
 export type CupomPublico = Omit<
   Cupom,
   "influenciadora_instagram" | "created_at"

@@ -350,44 +350,28 @@
 }
 
 /* ==========================================================================
-   Hero que se reveza entre três fotos
+   Hero que se reveza entre as fotos
 
-   Só CSS. Três camadas empilhadas, cada uma acesa por 6s dentro de um ciclo
-   de 18s, com a defasagem feita por `animation-delay`. Sem JavaScript não há
-   estado para hidratar, nada para o observador marcar, e a primeira foto
-   continua sendo o LCP.
+   A quantidade vem do painel, então o ciclo e o quadro-chave são calculados
+   no servidor e injetados pelo componente — ver `components/home/hero.tsx`.
 
-   A base é `opacity: 0`: antes de a animação começar, a camada não aparece.
-   A primeira parte em 1 porque a animação dela arranca em zero segundo.
+   A versão anterior tinha ciclo fixo de 18s e atrasos em `nth-child`,
+   calibrados para exatamente três fotos. Quando a dona desligasse uma, sobrava
+   uma janela de seis segundos com o hero vazio: só o véu escuro. Medido.
+
+   Aqui fica só o que não depende da quantidade.
    ========================================================================== */
 
 .hero-foto {
   opacity: 0;
-  animation: hero-reveza 18s infinite;
-}
-
-.hero-foto:nth-child(2) {
-  animation-delay: 6s;
-}
-
-.hero-foto:nth-child(3) {
-  animation-delay: 12s;
-}
-
-@keyframes hero-reveza {
-  0% { opacity: 1; }
-  28% { opacity: 1; }
-  36% { opacity: 0; }
-  92% { opacity: 0; }
-  100% { opacity: 1; }
 }
 
 /* Sem movimento: fica na primeira e pronto. A regra geral de
    `prefers-reduced-motion` zera a duração da animação, o que congelaria todas
-   em opacidade 1 e empilharia as três — por isso aqui é explícito. */
+   em opacidade 1 e empilharia as fotos — por isso é explícito. */
 @media (prefers-reduced-motion: reduce) {
   .hero-foto {
-    animation: none;
+    animation: none !important;
     opacity: 0;
   }
 
@@ -437,5 +421,37 @@
 @media (prefers-reduced-motion: reduce) {
   .card-foto-hover {
     display: none;
+  }
+}
+
+/* ==========================================================================
+   Entrada das capas de coleção
+
+   Quando uma capa toma o lugar de outra na fileira, ela entra em vez de
+   simplesmente aparecer. A primeira versão trocava sem passagem nenhuma, e a
+   fileira piscava a cada dois segundos.
+
+   O bloco remonta a cada troca (a chave em React muda), então basta uma
+   animação de entrada: não há estado a manter nem transição a coordenar.
+   ========================================================================== */
+
+.capa-entrando {
+  animation: capa-entra 0.7s var(--ease-entrada) both;
+}
+
+@keyframes capa-entra {
+  from {
+    opacity: 0;
+    transform: translateX(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capa-entrando {
+    animation: none;
   }
 }

@@ -1,11 +1,13 @@
 import { FormularioProduto } from "@/components/admin/formulario-produto";
 import { PRODUTO_VAZIO } from "@/lib/admin/valores-iniciais";
+import { getEtiquetas } from "@/lib/queries";
 import { getCategoriasAdmin, getProdutosAdmin } from "@/lib/queries/admin";
 
 export default async function NovoProdutoPage() {
-  const [categorias, produtos] = await Promise.all([
+  const [categorias, produtos, etiquetas] = await Promise.all([
     getCategoriasAdmin(),
     getProdutosAdmin(),
+    getEtiquetas(),
   ]);
 
   const cores = [
@@ -26,6 +28,7 @@ export default async function NovoProdutoPage() {
       <FormularioProduto
         categorias={categorias}
         coresExistentes={cores}
+        etiquetas={etiquetas.map((e) => e.texto)}
         valoresIniciais={PRODUTO_VAZIO}
       />
     </main>

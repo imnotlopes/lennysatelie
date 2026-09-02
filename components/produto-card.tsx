@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Preco } from "@/components/ui";
-import { BLUR_DATA_URL, imagemProduto, imagemProdutoSecundaria } from "@/lib/images";
-import type {
-  CupomPublico,
-  ProdutoComCategoria,
-} from "@/lib/supabase/types";
+import {
+  BLUR_DATA_URL,
+  imagemProduto,
+  imagemProdutoSecundaria,
+} from "@/lib/images";
+import type { CupomPublico, ProdutoComCategoria } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 
 export interface ProdutoCardProps {
@@ -20,14 +21,18 @@ export interface ProdutoCardProps {
 }
 
 /**
- * Card de produto: foto 2:3, nome, categoria e preço.
+ * Card de produto: foto, nome e preço. Nada mais.
  *
- * Sem borda, sem fundo e sem sombra, como na referência — a foto encosta na
- * vizinha e o texto fica solto sobre o creme da página.
+ * No formato da referência que o Edson trouxe: texto centrado embaixo da foto,
+ * nome em caixa alta com espaçamento largo, preço logo abaixo. Saiu a linha da
+ * categoria — quem está no acervo filtrado por "Festa" não precisa ler "Festa"
+ * em cinquenta cards.
  *
- * Quando a peça tem uma segunda foto, ela aparece no hover em telas com
- * ponteiro. Enquanto o acervo não tiver fotos reais, esse caminho fica
- * inerte, porque `imagens` está vazio.
+ * Sem borda, sem fundo e sem sombra: a foto encosta na vizinha e o texto fica
+ * solto sobre o creme da página.
+ *
+ * A etiqueta, quando existe, fica no canto superior esquerdo da foto. É a dona
+ * quem escreve pelo painel.
  */
 export function ProdutoCard({
   produto,
@@ -38,11 +43,12 @@ export function ProdutoCard({
 }: ProdutoCardProps) {
   const capa = imagemProduto(produto.imagens);
   const segunda = imagemProdutoSecundaria(produto.imagens);
+  const etiqueta = produto.etiqueta?.trim();
 
   return (
     <Link
       href={`/acervo/${produto.slug}`}
-      className={cn("group flex flex-col gap-2", className)}
+      className={cn("group flex flex-col gap-3", className)}
     >
       <div
         data-revelar="zoom"
@@ -76,18 +82,19 @@ export function ProdutoCard({
             className="card-foto-hover object-cover"
           />
         ) : null}
-      </div>
 
-      <div className="flex flex-col">
-        <h3 className="text-sm leading-base tracking-default text-ink transition-colors duration-200 ease-brand group-hover:text-accent-ink">
-          {produto.nome}
-        </h3>
-        {produto.categoria ? (
-          <span className="text-2xs text-ink-muted">
-            {produto.categoria.nome}
+        {etiqueta ? (
+          <span className="absolute top-0 left-0 z-10 bg-ink px-3 py-1.5 text-2xs tracking-caps uppercase text-ink-inverse">
+            {etiqueta}
           </span>
         ) : null}
-        <Preco produto={produto} cupom={cupom} />
+      </div>
+
+      <div className="flex flex-col items-center gap-1 text-center">
+        <h3 className="text-2xs tracking-caps uppercase text-ink transition-colors duration-200 ease-brand group-hover:text-accent-ink">
+          {produto.nome}
+        </h3>
+        <Preco produto={produto} cupom={cupom} className="justify-center" />
       </div>
     </Link>
   );

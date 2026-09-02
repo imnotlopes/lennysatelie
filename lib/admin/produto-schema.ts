@@ -58,6 +58,13 @@ export const produtoSchema = z
     categoriaId: z.string().uuid("Escolha uma categoria.").nullable(),
 
     cor: z.string().trim().max(60).optional(),
+    // 18 e o que cabe no canto da foto sem quebrar linha. A mesma trava esta
+    // no banco, mas aqui a mensagem e legivel para quem esta digitando.
+    etiqueta: z
+      .string()
+      .trim()
+      .max(18, "A etiqueta precisa caber no canto da foto: até 18 letras.")
+      .optional(),
 
     // Sem `.default()`: ele faria o tipo de entrada divergir do de saida, e o
     // resolver do react-hook-form exige os dois iguais. O formulario sempre

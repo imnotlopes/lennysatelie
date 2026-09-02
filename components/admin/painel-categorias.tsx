@@ -8,11 +8,18 @@ import {
   type DadosCategoria,
 } from "@/app/actions/admin-geral";
 import { useToast } from "@/components/admin/toast";
+import { UploadUmaFoto } from "@/components/admin/upload-uma-foto";
 import { Button, Input, estilosBotao } from "@/components/ui";
 import type { CategoriaComTotal } from "@/lib/queries/admin";
 import { cn } from "@/lib/utils";
 
-const VAZIA: DadosCategoria = { nome: "", slug: "", imagemCapa: "", ordem: 0 };
+const VAZIA: DadosCategoria = {
+  nome: "",
+  slug: "",
+  imagemCapa: "",
+  imagemHero: "",
+  ordem: 0,
+};
 
 export function PainelCategorias({
   categorias,
@@ -37,6 +44,7 @@ export function PainelCategorias({
       nome: c.nome,
       slug: c.slug,
       imagemCapa: c.imagem_capa ?? "",
+      imagemHero: c.imagem_hero ?? "",
       ordem: c.ordem,
     });
   }
@@ -44,7 +52,10 @@ export function PainelCategorias({
   function salvar(e: React.FormEvent) {
     e.preventDefault();
     iniciar(async () => {
-      const r = await salvarCategoria(editando === "nova" ? null : editando, form);
+      const r = await salvarCategoria(
+        editando === "nova" ? null : editando,
+        form,
+      );
       if (r.ok) {
         avisar("Categoria salva.");
         setEditando(null);
@@ -75,7 +86,15 @@ export function PainelCategorias({
         <table className="w-full min-w-160 text-left">
           <thead>
             <tr className="border-b border-line">
-              {["Ordem", "Nome", "Endereço", "Capa", "Vestidos", ""].map((t) => (
+              {[
+                "Ordem",
+                "Nome",
+                "Endereço",
+                "Capa",
+                "Topo",
+                "Vestidos",
+                "",
+              ].map((t) => (
                 <th
                   key={t}
                   scope="col"
@@ -124,6 +143,9 @@ export function PainelCategorias({
                 <td className="p-3 text-xs text-ink-muted">
                   {c.imagem_capa ? "sim" : "—"}
                 </td>
+                <td className="p-3 text-xs text-ink-muted">
+                  {c.imagem_hero ? "sim" : "usa a capa"}
+                </td>
                 <td className="p-3 text-xs text-ink">{c.totalProdutos}</td>
                 <td className="p-3">
                   <div className="flex gap-3 whitespace-nowrap">
@@ -143,7 +165,10 @@ export function PainelCategorias({
                             avisar(`${c.nome} foi excluída.`);
                             setLista((l) => l.filter((x) => x.id !== c.id));
                           } else {
-                            avisar(r.erro ?? "Não foi possível excluir.", "erro");
+                            avisar(
+                              r.erro ?? "Não foi possível excluir.",
+                              "erro",
+                            );
                           }
                         })
                       }
@@ -160,8 +185,8 @@ export function PainelCategorias({
       </div>
 
       <p className="text-2xs text-ink-muted">
-        Arraste a linha ou use as setas para mudar a ordem. É nessa ordem que
-        as categorias aparecem na página inicial e nos filtros.
+        Arraste a linha ou use as setas para mudar a ordem. É nessa ordem que as
+        categorias aparecem na página inicial e nos filtros.
       </p>
 
       {editando ? (
@@ -187,13 +212,56 @@ export function PainelCategorias({
             value={form.slug}
             onChange={(e) => setForm({ ...form, slug: e.target.value })}
           />
-          <Input
-            id="cat-capa"
-            label="Foto de capa"
-            hint="Caminho do arquivo no armazenamento. Pode deixar em branco."
-            value={form.imagemCapa}
-            onChange={(e) => setForm({ ...form, imagemCapa: e.target.value })}
-          />
+          {/* Eram campos de texto pedindo "o caminho do arquivo no
+              armazenamento". A Lennys não tem como saber o que é isso, e o
+              acordo do projeto é zero jargão aqui dentro. Agora ela escolhe a
+              foto do celular e vê a prévia. */}
+          <div className="flex flex-wrap gap-6">
+            <div className="flex flex-col gap-2">
+              <span className="text-xs text-ink">Foto de capa</span>
+              <UploadUmaFoto
+                valor={form.imagemCapa}
+                aoMudar={(caminho) => setForm({ ...form, imagemCapa: caminho })}
+                aoAvisar={avisar}
+                className="max-w-45"
+              />
+              <p className="max-w-45 text-2xs text-ink-muted">
+                O cartão da coleção na página inicial. Escolha uma foto em pé.
+              </p>
+              {form.imagemCapa ? (
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, imagemCapa: "" })}
+                  className="self-start text-2xs text-ink-muted underline underline-offset-4 hover:text-accent-ink"
+                >
+                  Tirar a foto de capa
+                </button>
+              ) : null}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <span className="text-xs text-ink">Foto de topo</span>
+              <UploadUmaFoto
+                valor={form.imagemHero}
+                aoMudar={(caminho) => setForm({ ...form, imagemHero: caminho })}
+                aoAvisar={avisar}
+                className="max-w-45"
+              />
+              <p className="max-w-45 text-2xs text-ink-muted">
+                A faixa larga no alto da página da coleção. Escolha uma foto
+                deitada. Vazia, entra a foto de capa no lugar.
+              </p>
+              {form.imagemHero ? (
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, imagemHero: "" })}
+                  className="self-start text-2xs text-ink-muted underline underline-offset-4 hover:text-accent-ink"
+                >
+                  Tirar a foto de topo
+                </button>
+              ) : null}
+            </div>
+          </div>
 
           <div className="flex flex-wrap items-center gap-3">
             <Button type="submit" loading={salvando}>

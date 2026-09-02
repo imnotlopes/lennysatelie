@@ -24,6 +24,8 @@ export interface FormularioProdutoProps {
   categorias: Categoria[];
   /** Cores já cadastradas, para sugerir em vez de digitar de novo. */
   coresExistentes: string[];
+  /** Etiquetas do catálogo do painel, para sugerir no campo. */
+  etiquetas: string[];
   /** Ausente no cadastro de peça nova. */
   produtoId?: string;
   valoresIniciais: ProdutoFormulario;
@@ -32,6 +34,7 @@ export interface FormularioProdutoProps {
 export function FormularioProduto({
   categorias,
   coresExistentes,
+  etiquetas,
   produtoId,
   valoresIniciais,
 }: FormularioProdutoProps) {
@@ -179,6 +182,36 @@ export function FormularioProduto({
             Escreva ou escolha uma que já existe. É por ela que a cliente
             filtra no site.
           </p>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label htmlFor="etiqueta" className="text-xs text-ink">
+            Etiqueta
+          </label>
+          <input
+            id="etiqueta"
+            list="etiquetas-sugeridas"
+            maxLength={18}
+            {...register("etiqueta")}
+            placeholder="Pode deixar em branco"
+            className="h-9 w-full rounded-none border border-line-strong bg-surface-raised px-3 text-xs text-ink focus:border-ink focus:outline-none"
+          />
+          {/* As sugestões vêm da tela de Etiquetas, não do código: a dona
+              monta a lista dela. O campo continua aceitando texto livre. */}
+          <datalist id="etiquetas-sugeridas">
+            {etiquetas.map((e) => (
+              <option key={e} value={e} />
+            ))}
+          </datalist>
+          <p className="text-2xs text-ink-muted">
+            Selo no canto da foto, no acervo. Até 18 letras, senão não cabe.
+            Deixe vazio para a peça aparecer sem selo.
+          </p>
+          {erros.etiqueta ? (
+            <p className="text-2xs text-error" role="alert">
+              {erros.etiqueta.message}
+            </p>
+          ) : null}
         </div>
 
         <fieldset className="flex flex-col gap-2">

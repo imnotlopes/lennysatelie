@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BarraSuperior } from "@/components/acervo/barra-superior";
+import { CapasColecoes } from "@/components/home/capas-colecoes";
+import { CapaColecao } from "@/components/acervo/capa-colecao";
 import { FiltrosMobile } from "@/components/acervo/filtros-mobile";
 import { PainelFiltros } from "@/components/acervo/painel-filtros";
 import { ProdutoCard } from "@/components/produto-card";
@@ -8,13 +10,16 @@ import { Container, Heading, estilosBotao } from "@/components/ui";
 import {
   contarAtivos,
   escreverEstado,
+  temFiltroAlemDaCategoria,
   lerEstado,
   PASSO_PAGINA,
   type SearchParams,
 } from "@/lib/acervo/params";
 import { paraFiltros } from "@/lib/acervo/params";
+import { imagemCategoria } from "@/lib/images";
 import {
   getAcervo,
+  getCategorias,
   getConfiguracoes,
   getCupomAtivo,
   getFacetas,
@@ -60,17 +65,53 @@ export default async function AcervoPage({
 
   const temMais = produtos.length < total;
 
+  // Uma coleção escolhida e nenhum outro filtro: a página ganha a capa dela.
+  // Com dois filtros ligados o recorte deixa de ser "a coleção" e a capa
+  // passaria a mentir sobre o que está listado abaixo.
+  const categorias = await getCategorias();
+  const soUmaColecao =
+    estado.categorias.length === 1 && !temFiltroAlemDaCategoria(estado);
+  const colecao = soUmaColecao
+    ? categorias.find((c) => c.slug === estado.categorias[0])
+    : undefined;
+
   return (
     <Container as="main" className="flex flex-col gap-6 py-12">
-      <header className="flex flex-col gap-2">
-        <Heading as={1} size="display-md" revelar>
-          Acervo
-        </Heading>
-        <p className="max-w-prose text-sm text-ink-muted">
-          {facetas.total} vestidos para alugar. Escolha a peça e a gente combina
-          a data pelo WhatsApp.
-        </p>
-      </header>
+      {colecao ? (
+        <CapaColecao categoria={colecao} pecas={total} />
+      ) : (
+        <header className="flex flex-col gap-2">
+          <Heading as={1} size="display-md" revelar>
+            Acervo
+          </Heading>
+          <p className="max-w-prose text-sm text-ink-muted">
+            {facetas.total} vestidos para alugar. Escolha a peça e a gente
+            combina a data pelo WhatsApp.
+          </p>
+        </header>
+      )}
+
+      {/* As capas só aparecem no acervo inteiro. Depois que a visitante entra
+          numa coleção, quem situa é a CapaColecao acima — repetir a fileira
+          aqui ofereceria sair de uma coleção logo abaixo do título dela.
+
+          A coleção também está nos filtros ao lado, mas filtro é lista de
+          texto: quem ainda não sabe o que quer escolhe pela foto. */}
+      {colecao ? null : (
+        <section className="flex flex-col gap-4">
+          <Heading as={2} size="display-sm" revelar>
+            Coleções
+          </Heading>
+          <CapasColecoes
+            capas={categorias.map((c) => ({
+              id: c.id,
+              nome: c.nome,
+              slug: c.slug,
+              imagem: imagemCategoria(c.slug, c.imagem_capa),
+            }))}
+          />
+        </section>
+      )}
 
       <div className="flex gap-12">
         <aside className="hidden w-70 shrink-0 lg:block">

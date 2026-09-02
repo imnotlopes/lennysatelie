@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Container, Heading } from "@/components/ui";
-import { FEEDBACKS_COM_IMAGEM, FEEDBACKS_POR_MENSAGEM } from "@/lib/feedbacks";
-import { BLUR_DATA_URL } from "@/lib/images";
+import { BLUR_DATA_URL, urlDaMidia } from "@/lib/images";
+import { getMidias } from "@/lib/queries";
 
 /**
  * Clientes com a peça e o relato na mesma imagem.
@@ -13,8 +13,9 @@ import { BLUR_DATA_URL } from "@/lib/images";
  * Em trilho horizontal com rolagem, e não em grade: são seis peças altas, e
  * empilhar isso numa página que já é comprida cansa antes da metade.
  */
-export function FeedbacksComImagem() {
-  if (!FEEDBACKS_COM_IMAGEM.length) return null;
+export async function FeedbacksComImagem() {
+  const itens = await getMidias("feedback_imagem");
+  if (!itens.length) return null;
 
   return (
     <Container as="section" className="flex flex-col gap-6 py-12">
@@ -29,15 +30,15 @@ export function FeedbacksComImagem() {
       </div>
 
       <ul className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] lg:mx-0 lg:px-0 [&::-webkit-scrollbar]:hidden">
-        {FEEDBACKS_COM_IMAGEM.map((item) => (
+        {itens.map((item) => (
           <li
-            key={item.imagem}
+            key={item.id}
             className="w-56 shrink-0 snap-start sm:w-64 lg:w-72"
           >
             <div className="relative aspect-9/16 w-full overflow-hidden bg-surface-alt">
               <Image
-                src={item.imagem}
-                alt={item.transcricao}
+                src={urlDaMidia(item.arquivo)}
+                alt={item.texto_alt ?? ""}
                 fill
                 loading="lazy"
                 placeholder="blur"
@@ -63,8 +64,9 @@ export function FeedbacksComImagem() {
  * Colunas em vez de grade: os prints têm alturas bem diferentes, e numa grade
  * a linha inteira ganha a altura do maior.
  */
-export function FeedbacksPorMensagem() {
-  if (!FEEDBACKS_POR_MENSAGEM.length) return null;
+export async function FeedbacksPorMensagem() {
+  const itens = await getMidias("feedback_mensagem");
+  if (!itens.length) return null;
 
   return (
     <div className="bg-surface-alt">
@@ -80,11 +82,11 @@ export function FeedbacksPorMensagem() {
         </div>
 
         <ul className="columns-2 gap-3 sm:columns-3 lg:columns-4">
-          {FEEDBACKS_POR_MENSAGEM.map((item) => (
-            <li key={item.imagem} className="mb-3 break-inside-avoid">
+          {itens.map((item) => (
+            <li key={item.id} className="mb-3 break-inside-avoid">
               <Image
-                src={item.imagem}
-                alt={item.transcricao}
+                src={urlDaMidia(item.arquivo)}
+                alt={item.texto_alt ?? ""}
                 width={340}
                 height={470}
                 loading="lazy"

@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { IconeInstagram } from "@/components/icons";
 import { Container, Heading, estilosBotao } from "@/components/ui";
-import { REELS } from "@/lib/feedbacks";
-import { BLUR_DATA_URL } from "@/lib/images";
+import { BLUR_DATA_URL, urlDaMidia } from "@/lib/images";
+import { getMidias } from "@/lib/queries";
 import type { Contato } from "@/lib/queries";
 
 export interface SecaoVideosProps {
@@ -20,8 +20,9 @@ export interface SecaoVideosProps {
  * O quadro é 9:16 com o triângulo de play em cima, para ler como vídeo antes
  * de qualquer texto. Cada um abre o reel em aba nova.
  */
-export function SecaoVideos({ contato }: SecaoVideosProps) {
-  if (!REELS.length) return null;
+export async function SecaoVideos({ contato }: SecaoVideosProps) {
+  const reels = await getMidias("reel");
+  if (!reels.length) return null;
 
   const handle = contato.instagram?.trim();
   const perfil = handle
@@ -54,16 +55,16 @@ export function SecaoVideos({ contato }: SecaoVideosProps) {
       </div>
 
       <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-        {REELS.map((reel, indice) => (
-          <li key={reel.url}>
+        {reels.map((reel, indice) => (
+          <li key={reel.id}>
             <a
-              href={reel.url}
+              href={reel.url ?? "#"}
               target="_blank"
               rel="noopener noreferrer"
               className="group relative block aspect-9/16 overflow-hidden bg-surface-alt"
             >
               <Image
-                src={reel.capa}
+                src={urlDaMidia(reel.arquivo)}
                 alt=""
                 fill
                 loading="lazy"
@@ -89,7 +90,7 @@ export function SecaoVideos({ contato }: SecaoVideosProps) {
               </span>
 
               <span className="sr-only">
-                {reel.descricao} {indice + 1}, abre em nova aba
+                Vídeo {indice + 1} do ateliê no Instagram, abre em nova aba
               </span>
             </a>
           </li>

@@ -13,6 +13,8 @@ export interface DadosCategoria {
   nome: string;
   slug: string;
   imagemCapa: string;
+  /** Foto larga do topo da coleção. Vazia significa "usa a capa". */
+  imagemHero: string;
   ordem: number;
 }
 
@@ -47,6 +49,7 @@ export async function salvarCategoria(
     nome,
     slug,
     imagem_capa: dados.imagemCapa.trim() || null,
+    imagem_hero: dados.imagemHero.trim() || null,
     ordem: dados.ordem,
   };
 

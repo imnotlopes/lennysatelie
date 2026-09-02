@@ -133,6 +133,23 @@ export function temFiltroAtivo(estado: EstadoAcervo): boolean {
   );
 }
 
+/**
+ * Há filtro além da coleção escolhida?
+ *
+ * Serve para decidir se o acervo mostra a capa da coleção. Com cor ou tamanho
+ * ligados junto, o que está listado deixa de ser "a coleção inteira" e a capa
+ * passaria a prometer mais do que a página entrega.
+ */
+export function temFiltroAlemDaCategoria(estado: EstadoAcervo): boolean {
+  return Boolean(
+    estado.cores.length ||
+      estado.tamanhos.length ||
+      estado.precoMin !== undefined ||
+      estado.precoMax !== undefined ||
+      estado.busca,
+  );
+}
+
 /** Liga ou desliga um valor de um filtro de múltipla escolha. */
 export function alternar(atual: string[], valor: string): string[] {
   return atual.includes(valor)

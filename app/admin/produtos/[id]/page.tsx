@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FormularioProduto } from "@/components/admin/formulario-produto";
 import { produtoParaFormulario } from "@/lib/admin/valores-iniciais";
+import { getEtiquetas } from "@/lib/queries";
 import {
   getCategoriasAdmin,
   getProdutoAdminPorId,
@@ -17,9 +18,10 @@ export default async function EditarProdutoPage({
   const produto = await getProdutoAdminPorId(id);
   if (!produto) notFound();
 
-  const [categorias, produtos] = await Promise.all([
+  const [categorias, produtos, etiquetas] = await Promise.all([
     getCategoriasAdmin(),
     getProdutosAdmin(),
+    getEtiquetas(),
   ]);
 
   const cores = [
@@ -44,6 +46,7 @@ export default async function EditarProdutoPage({
       <FormularioProduto
         categorias={categorias}
         coresExistentes={cores}
+        etiquetas={etiquetas.map((e) => e.texto)}
         produtoId={produto.id}
         valoresIniciais={produtoParaFormulario(produto)}
       />

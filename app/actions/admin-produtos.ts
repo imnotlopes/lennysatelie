@@ -52,6 +52,7 @@ function paraBanco(dados: ProdutoFormulario) {
     preco_original: centavosParaReais(dados.precoOriginalCentavos ?? null),
     categoria_id: dados.categoriaId,
     cor: dados.cor?.trim() || null,
+    etiqueta: dados.etiqueta?.trim() || null,
     tamanho: dados.tamanhos,
     imagens: dados.imagens,
     ativo: dados.ativo,
@@ -123,6 +124,43 @@ export async function alternarCampo(
     .single();
 
   if (error) return { ok: false, erro: "Não foi possível salvar a mudança." };
+
+  revalidarTudo(data.slug);
+  return { ok: true };
+}
+
+/**
+ * Grava só a etiqueta de uma peça, direto da lista de produtos.
+ *
+ * Existe para não obrigar a abrir o formulário inteiro só para pôr um selo.
+ * Com 220 vestidos, marcar dez como "Novidade" abrindo dez formulários é
+ * castigo.
+ *
+ * Vazio apaga a etiqueta. O limite de 18 letras é o mesmo do formulário: acima
+ * disso o selo não cabe no canto da foto.
+ */
+export async function salvarEtiquetaDoProduto(
+  id: string,
+  etiqueta: string,
+): Promise<ResultadoAcao> {
+  const texto = etiqueta.trim();
+
+  if (texto.length > 18) {
+    return {
+      ok: false,
+      erro: "A etiqueta precisa caber no canto da foto: até 18 letras.",
+    };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("produtos")
+    .update({ etiqueta: texto || null })
+    .eq("id", id)
+    .select("slug")
+    .single();
+
+  if (error) return { ok: false, erro: "Não foi possível salvar a etiqueta." };
 
   revalidarTudo(data.slug);
   return { ok: true };

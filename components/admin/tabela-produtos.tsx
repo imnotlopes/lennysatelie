@@ -6,6 +6,7 @@ import { useMemo, useState, useTransition } from "react";
 import {
   alternarCampo,
   excluirProduto,
+  salvarEtiquetaDoProduto,
 } from "@/app/actions/admin-produtos";
 import { useToast } from "@/components/admin/toast";
 import { estilosBotao } from "@/components/ui";
@@ -17,9 +18,15 @@ import { cn } from "@/lib/utils";
 export interface TabelaProdutosProps {
   produtos: ProdutoComCategoria[];
   categorias: Categoria[];
+  /** Sugestões do catálogo, para etiquetar sem digitar tudo de novo. */
+  etiquetas: string[];
 }
 
-export function TabelaProdutos({ produtos, categorias }: TabelaProdutosProps) {
+export function TabelaProdutos({
+  produtos,
+  categorias,
+  etiquetas,
+}: TabelaProdutosProps) {
   const { avisar } = useToast();
   const [busca, setBusca] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -27,8 +34,8 @@ export function TabelaProdutos({ produtos, categorias }: TabelaProdutosProps) {
     null,
   );
 
-  // Filtro no cliente: são 50 peças, e filtrar sem ida ao servidor deixa a
-  // busca instantânea enquanto a dona digita.
+  // Filtro no cliente: são algumas centenas de peças, e filtrar sem ida ao
+  // servidor deixa a busca instantânea enquanto a dona digita.
   const visiveis = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     return produtos.filter((p) => {
@@ -79,11 +86,28 @@ export function TabelaProdutos({ produtos, categorias }: TabelaProdutosProps) {
         </p>
       </div>
 
+      {/* Um datalist só para a tabela inteira. Um por linha seriam duzentas
+          cópias da mesma lista no HTML. */}
+      <datalist id="etiquetas-da-lista">
+        {etiquetas.map((e) => (
+          <option key={e} value={e} />
+        ))}
+      </datalist>
+
       <div className="overflow-x-auto border border-line bg-surface-raised">
-        <table className="w-full min-w-160 text-left">
+        <table className="w-full min-w-180 text-left">
           <thead>
             <tr className="border-b border-line">
-              {["Foto", "Vestido", "Categoria", "Preço", "No site", "Destaque", ""].map(
+              {[
+                "Foto",
+                "Vestido",
+                "Categoria",
+                "Etiqueta",
+                "Preço",
+                "No site",
+                "Destaque",
+                "",
+              ].map(
                 (t) => (
                   <th
                     key={t}
@@ -137,7 +161,34 @@ function Linha({
 }) {
   const [ativo, setAtivo] = useState(produto.ativo);
   const [destaque, setDestaque] = useState(produto.destaque);
+  const [etiqueta, setEtiqueta] = useState(produto.etiqueta ?? "");
   const [salvando, iniciar] = useTransition();
+
+  /**
+   * Grava a etiqueta ao sair do campo.
+   *
+   * Sem botão de salvar: uma coluna com um botão por linha em duzentas linhas
+   * seria uma parede de botões. Sair do campo é o gesto que a dona já faz para
+   * ir à próxima peça.
+   */
+  function gravarEtiqueta(valor: string) {
+    const limpo = valor.trim();
+    if (limpo === (produto.etiqueta ?? "")) return;
+
+    iniciar(async () => {
+      const r = await salvarEtiquetaDoProduto(produto.id, limpo);
+      if (r.ok) {
+        aoAvisar(
+          limpo
+            ? `${produto.nome}: etiqueta "${limpo}".`
+            : `${produto.nome} ficou sem etiqueta.`,
+        );
+      } else {
+        setEtiqueta(produto.etiqueta ?? "");
+        aoAvisar(r.erro ?? "Não foi possível salvar.", "erro");
+      }
+    });
+  }
 
   function alternar(campo: "ativo" | "destaque", valor: boolean) {
     // Muda na tela na hora e desfaz se o servidor recusar: esperar a ida e
@@ -171,6 +222,18 @@ function Linha({
       <td className="p-3 text-xs text-ink">{produto.nome}</td>
       <td className="p-3 text-xs text-ink-muted">
         {produto.categoria?.nome ?? "—"}
+      </td>
+      <td className="p-3">
+        <input
+          aria-label={`Etiqueta de ${produto.nome}`}
+          list="etiquetas-da-lista"
+          value={etiqueta}
+          maxLength={18}
+          placeholder="sem etiqueta"
+          onChange={(e) => setEtiqueta(e.target.value)}
+          onBlur={(e) => gravarEtiqueta(e.target.value)}
+          className="h-8 w-28 rounded-none border border-line bg-surface px-2 text-2xs text-ink focus:border-ink focus:outline-none"
+        />
       </td>
       <td className="p-3 text-xs text-ink">
         {produto.preco_locacao === null
