@@ -1,6 +1,6 @@
 import { CategoriasGrid } from "@/components/home/categorias-grid";
 import { ComoFunciona } from "@/components/home/como-funciona";
-import { FeedbacksComImagem, FeedbacksPorMensagem } from "@/components/secoes/feedbacks";
+import { Feedbacks } from "@/components/secoes/feedbacks";
 import { Destaques } from "@/components/home/destaques";
 import { FaixaWhatsapp } from "@/components/home/faixa-whatsapp";
 import { Hero } from "@/components/home/hero";
@@ -44,9 +44,8 @@ export default async function HomePage() {
       <CategoriasGrid />
       <Destaques />
       <ComoFunciona />
-      <FeedbacksComImagem />
       <SecaoVideos contato={contato} />
-      <FeedbacksPorMensagem />
+      <Feedbacks />
       <FaixaWhatsapp />
     </main>
   );

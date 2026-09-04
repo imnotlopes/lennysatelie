@@ -23,6 +23,23 @@ function lugaresPara(largura: number): number {
 }
 
 /**
+ * Quantos lugares o servidor desenha, antes de saber o tamanho da tela.
+ *
+ * Um. A versão anterior começava em quatro e encolhia depois que o script
+ * media a tela: no celular a página nascia com quatro cartões empilhados e
+ * encolhia embaixo do dedo, e as fotos que sumiam já tinham sido baixadas.
+ *
+ * Esconder os lugares extras por CSS não resolve — foi a primeira tentativa e
+ * ficou pior. Imagem `lazy` dentro de `display: none` continua sendo baixada,
+ * então o telefone passou a buscar três capas em vez de duas. Medido.
+ *
+ * Começar em um e crescer não causa salto: as colunas da grade são fixas pelo
+ * CSS, então acrescentar cartões preenche colunas vazias à direita sem mudar a
+ * altura da fileira. No celular, que é uma coluna só, nunca chega a crescer.
+ */
+const LUGARES_INICIAIS = 1;
+
+/**
  * As capas das coleções, numa fileira de tamanho fixo.
  *
  * A fileira tem quatro lugares no desktop, dois no tablet e um no celular. Com
@@ -37,11 +54,14 @@ function lugaresPara(largura: number): number {
  * É componente de cliente por causa disso. Poderia ser CSS puro como o hero,
  * mas cada capa é um LINK: se trocar no meio do toque, a cliente abre a
  * coleção errada. Com JavaScript dá para parar assim que o dedo encosta.
+ *
+ * O número de lugares desenhados é sempre o mesmo, no servidor e no cliente.
+ * O que muda por tela é quais deles o CSS mostra — ver `VISIBILIDADE`.
  */
 export function CapasColecoes({ capas }: { capas: CapaResumo[] }) {
   const [atual, setAtual] = useState(0);
   const [parado, setParado] = useState(false);
-  const [lugares, setLugares] = useState(4);
+  const [lugares, setLugares] = useState(LUGARES_INICIAIS);
   const menosMovimento = useRef(false);
 
   useEffect(() => {
@@ -102,7 +122,11 @@ export function CapasColecoes({ capas }: { capas: CapaResumo[] }) {
                   src={capa.imagem}
                   alt={`Vestidos da coleção ${capa.nome}`}
                   fill
-                  priority={posicao < 2}
+                  // Sem `priority`: a fileira fica abaixo da dobra em
+                  // qualquer tela, e o preload só roubava banda do hero, que é
+                  // o que a visitante está de fato olhando. No celular a mais
+                  // pesada delas chegava a 112KB, mais que o próprio hero.
+                  loading="lazy"
                   sizes="(min-width: 1025px) 25vw, (min-width: 640px) 50vw, 100vw"
                   className="object-cover object-top"
                 />

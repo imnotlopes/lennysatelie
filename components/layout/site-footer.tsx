@@ -19,6 +19,13 @@ import { Logo } from "./logo";
 export async function SiteFooter() {
   const { contato } = await getConfiguracoes();
   const instagramUrl = `https://instagram.com/${contato.instagram.replace("@", "")}`;
+  // Os links de texto do rodapé tinham 19px de altura: a altura da linha, e
+  // nada mais. No celular o dedo erra. `min-h-9` dá 45px de área tocável sem
+  // mexer no tamanho da fonte nem no visual — o texto só passa a ficar
+  // centrado numa caixa maior. No desktop, onde quem aponta é o cursor, a
+  // altura volta ao natural e o rodapé não incha.
+  const linkRodape =
+    "flex min-h-9 items-center text-xs text-ink-muted transition-colors duration-200 ease-brand hover:text-accent-ink sm:min-h-0";
   const social = "flex size-9 items-center justify-center border border-line-strong text-ink transition-colors duration-200 ease-brand hover:border-accent hover:text-accent-ink";
   const ano = new Date().getFullYear();
 
@@ -31,14 +38,11 @@ export async function SiteFooter() {
             <span>{contato.endereco}</span>
             <a
               href={`tel:${contato.telefone.replace(/\D/g, "")}`}
-              className="transition-colors duration-200 ease-brand hover:text-accent-ink"
+              className={linkRodape}
             >
               {contato.telefone}
             </a>
-            <a
-              href={`mailto:${contato.email}`}
-              className="transition-colors duration-200 ease-brand hover:text-accent-ink"
-            >
+            <a href={`mailto:${contato.email}`} className={linkRodape}>
               {contato.email}
             </a>
           </address>
@@ -49,11 +53,7 @@ export async function SiteFooter() {
             Navegue
           </h2>
           {NAVEGACAO_PRINCIPAL.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-xs text-ink-muted transition-colors duration-200 ease-brand hover:text-accent-ink"
-            >
+            <Link key={item.href} href={item.href} className={linkRodape}>
               {item.rotulo}
             </Link>
           ))}
