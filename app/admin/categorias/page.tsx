@@ -1,7 +1,10 @@
 import { PainelCategorias } from "@/components/admin/painel-categorias";
 import { getCategoriasComTotal } from "@/lib/queries/admin";
+import { exigirSessao } from "@/lib/admin/sessao";
 
 export default async function CategoriasPage() {
+  await exigirSessao();
+
   const categorias = await getCategoriasComTotal();
 
   return (

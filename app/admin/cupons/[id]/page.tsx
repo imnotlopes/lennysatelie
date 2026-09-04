@@ -2,12 +2,15 @@ import { notFound } from "next/navigation";
 import { FormularioCupom } from "@/components/admin/formulario-cupom";
 import { SITE } from "@/lib/admin/site";
 import { getCupomPorId } from "@/lib/queries/admin";
+import { exigirSessao } from "@/lib/admin/sessao";
 
 export default async function EditarCupomPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await exigirSessao();
+
   const { id } = await params;
   const cupom = await getCupomPorId(id);
   if (!cupom) notFound();

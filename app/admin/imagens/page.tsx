@@ -1,9 +1,12 @@
 import { PainelMidias } from "@/components/admin/painel-midias";
 import { getTodasMidias } from "@/lib/queries";
+import { exigirSessao } from "@/lib/admin/sessao";
 
 export const metadata = { title: "Imagens do site | Painel Lennys Ateliê" };
 
 export default async function ImagensPage() {
+  await exigirSessao();
+
   const midias = await getTodasMidias();
 
   return (

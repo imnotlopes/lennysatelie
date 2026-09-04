@@ -1,7 +1,10 @@
 import { PainelEtiquetas } from "@/components/admin/painel-etiquetas";
 import { getEtiquetasComUso } from "@/lib/queries";
+import { exigirSessao } from "@/lib/admin/sessao";
 
 export default async function EtiquetasPage() {
+  await exigirSessao();
+
   const etiquetas = await getEtiquetasComUso();
 
   return (

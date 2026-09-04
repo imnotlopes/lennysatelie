@@ -10,59 +10,41 @@ import { cn } from "@/lib/utils";
 const MS_POR_ITEM = 4000;
 
 /**
- * Os lugares do mosaico: médios e pequenos.
- *
- * Todos com a mesma largura — uma coluna. O que muda é a altura: o médio ocupa
- * duas fileiras, o pequeno uma. A primeira versão tinha um lugar grande de duas
- * colunas por duas fileiras, e no desktop ele dominava a seção inteira.
- *
- * `fonte` diz de qual pilha o lugar se serve. O médio recebe print de mensagem,
- * porque conversa é alta e estreita e é essa a forma que ele tem. O pequeno
- * recebe os stories, que são foto com legenda grande.
- *
- * A ordem importa: alternando médio e pequenos, a grade se fecha sem sobra —
- * o médio ocupa uma coluna inteira e os pequenos empilham dois a dois ao lado.
- */
-const LUGARES = [
-  { fonte: "mensagens", classe: "row-span-2", proporcao: "h-full" },
-  { fonte: "fotos", classe: "", proporcao: "aspect-3/4" },
-  { fonte: "fotos", classe: "", proporcao: "aspect-3/4" },
-  { fonte: "mensagens", classe: "row-span-2", proporcao: "h-full" },
-  { fonte: "fotos", classe: "", proporcao: "aspect-3/4" },
-  { fonte: "fotos", classe: "", proporcao: "aspect-3/4" },
-] as const;
-
-/**
  * Quantos lugares o servidor desenha antes de saber o tamanho da tela.
  *
- * Três: um médio e dois pequenos, que é o que fecha duas colunas. Os outros
- * três entram depois da hidratação, quando dá para saber que a tela é larga.
- *
- * Desenhar os cinco e esconder os extras por CSS não funciona — imagem
- * escondida continua sendo baixada. Foi medido nas capas de coleção.
+ * Quatro, que é o que preenche duas colunas. Os outros entram depois da
+ * hidratação, quando dá para saber que a tela é larga. Desenhar todos e
+ * esconder os extras por CSS não funciona: imagem escondida continua sendo
+ * baixada, e no celular isso é banda jogada fora.
  */
-const LUGARES_INICIAIS = 3;
+const LUGARES_INICIAIS = 4;
+const LUGARES_DESKTOP = 8;
 
 export interface MosaicoDepoimentosProps {
-  /** Prints de conversa. Vão para o lugar grande, onde dá para ler. */
+  /** Prints de conversa. Quase quadrados: proporção entre 0,64 e 0,98. */
   mensagens: Midia[];
-  /** Stories do ateliê: cliente com a peça e a legenda já na arte. */
+  /** Stories do ateliê: cliente com a peça, sempre em 9:16. */
   fotos: Midia[];
 }
 
 /**
  * Os depoimentos num mosaico que se reveza.
  *
- * Antes eram duas seções na home — um trilho de stories e uma parede de prints
- * — separadas pela seção de vídeos. Mesmo assunto, dois formatos, com outra
- * coisa no meio. Agora é uma só.
+ * Antes eram duas seções na home, com a seção de vídeos no meio. Agora é uma.
+ *
+ * Em colunas, e não em grade de células fixas — e isso é a correção de um erro
+ * meu. A primeira versão dava a cada lugar um tamanho fixo e recortava a imagem
+ * para caber. Só que os prints de conversa são quase quadrados (326x390) e os
+ * stories são 9:16: nenhum tamanho fixo serve aos dois. O resultado foi
+ * mensagem cortada pela metade, sem nada legível.
+ *
+ * Aqui cada imagem entra inteira, na proporção que ela tem. A variação de
+ * tamanho vem do conteúdo: o story é alto, o print é baixo. É o que dá a
+ * aparência de mosaico sem cortar nada.
  *
  * Cada lugar mostra o item `(atual + posição)` da sua pilha e anda de um em um,
- * como as capas de coleção. Quem tem dezenove depoimentos e seis lugares não
- * precisa empilhar dezenove: eles passam.
- *
- * Para assim que o dedo encosta. Sem isso a visitante começa a ler uma
- * mensagem e ela troca no meio da frase.
+ * como as capas de coleção. Para assim que o dedo encosta, senão a visitante
+ * começa a ler uma mensagem e ela troca no meio da frase.
  */
 export function MosaicoDepoimentos({
   mensagens,
@@ -71,6 +53,7 @@ export function MosaicoDepoimentos({
   const [atual, setAtual] = useState(0);
   const [parado, setParado] = useState(false);
   const [lugares, setLugares] = useState(LUGARES_INICIAIS);
+  const [ampliada, setAmpliada] = useState<Midia | null>(null);
   const menosMovimento = useRef(false);
 
   useEffect(() => {
@@ -79,72 +62,116 @@ export function MosaicoDepoimentos({
     ).matches;
 
     const medir = () =>
-      setLugares(window.innerWidth >= 1025 ? LUGARES.length : LUGARES_INICIAIS);
+      setLugares(window.innerWidth >= 1025 ? LUGARES_DESKTOP : LUGARES_INICIAIS);
     medir();
     window.addEventListener("resize", medir);
     return () => window.removeEventListener("resize", medir);
   }, []);
 
-  const visiveis = LUGARES.slice(0, lugares);
-
-  // Só gira se alguma pilha tiver mais itens que lugares servindo-se dela.
+  // Também para enquanto uma imagem está aberta: girar por trás faria outra
+  // aparecer no lugar dela assim que fechasse.
   const gira =
-    mensagens.length > visiveis.filter((l) => l.fonte === "mensagens").length ||
-    fotos.length > visiveis.filter((l) => l.fonte === "fotos").length;
+    !parado && !ampliada && mensagens.length + fotos.length > lugares;
 
   useEffect(() => {
-    if (!gira || parado || menosMovimento.current) return;
+    if (!gira || menosMovimento.current) return;
     const id = window.setInterval(() => setAtual((i) => i + 1), MS_POR_ITEM);
     return () => window.clearInterval(id);
-  }, [gira, parado]);
+  }, [gira]);
 
-  // Cada pilha anda no seu próprio passo, senão as fotos dariam a volta muito
-  // antes das mensagens e ficariam se repetindo enquanto o lugar grande ainda
-  // está na primeira rodada.
-  const contadores = { mensagens: 0, fotos: 0 };
+  useEffect(() => {
+    if (!ampliada) return;
+    const aoTeclar = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setAmpliada(null);
+    };
+    window.addEventListener("keydown", aoTeclar);
+    return () => window.removeEventListener("keydown", aoTeclar);
+  }, [ampliada]);
+
+  // Alterna as duas pilhas para as duas aparecerem misturadas, cada uma
+  // andando no seu próprio passo. Sem isso os seis stories dariam a volta bem
+  // antes das treze mensagens e ficariam se repetindo.
+  const visiveis: Midia[] = [];
+  let iMensagem = 0;
+  let iFoto = 0;
+  for (let i = 0; i < lugares; i++) {
+    const pilha = i % 2 === 0 && mensagens.length ? mensagens : fotos;
+    if (!pilha.length) continue;
+    const indice = pilha === mensagens ? iMensagem++ : iFoto++;
+    visiveis.push(pilha[(atual + indice) % pilha.length]);
+  }
 
   return (
-    <ul
-      onPointerDown={() => setParado(true)}
-      onFocusCapture={() => setParado(true)}
-      className="grid grid-cols-2 gap-3 lg:grid-cols-4"
-    >
-      {visiveis.map((lugar, posicao) => {
-        const pilha = lugar.fonte === "mensagens" ? mensagens : fotos;
-        if (!pilha.length) return null;
-
-        const indice = contadores[lugar.fonte]++;
-        const item = pilha[(atual + indice) % pilha.length];
-
-        return (
-          <li key={posicao} className={lugar.classe}>
-            <div
-              // A chave muda quando o depoimento daquele lugar muda, o que
-              // remonta o bloco e dispara a entrada suave — mesma mecânica das
-              // capas de coleção.
-              key={item.id}
+    <>
+      <ul
+        onPointerDown={() => setParado(true)}
+        onFocusCapture={() => setParado(true)}
+        className="columns-2 gap-3 lg:columns-4"
+      >
+        {visiveis.map((item, posicao) => (
+          <li key={posicao} className="mb-3 break-inside-avoid">
+            <button
+              type="button"
+              onClick={() => setAmpliada(item)}
+              aria-label="Ver este depoimento maior"
               className={cn(
-                "relative w-full overflow-hidden bg-surface-alt",
-                lugar.proporcao,
+                "block w-full cursor-zoom-in overflow-hidden bg-surface-raised",
+                "transition-opacity duration-200 ease-brand hover:opacity-90",
                 gira && "capa-entrando",
               )}
             >
               <Image
+                key={item.id}
                 src={urlDaMidia(item.arquivo)}
                 alt={item.texto_alt ?? ""}
-                fill
+                width={480}
+                height={640}
                 loading="lazy"
                 placeholder="blur"
                 blurDataURL={BLUR_DATA_URL}
-                // Médio e pequeno têm a mesma largura: uma coluna. Só a
-                // altura muda, e altura não entra nesta conta.
-                sizes="(min-width: 1025px) 20vw, 50vw"
-                className="object-cover"
+                sizes="(min-width: 1025px) 22vw, 45vw"
+                // Largura cheia e altura automática: a altura sai da proporção
+                // da própria imagem. É isto que impede o corte.
+                className="h-auto w-full"
               />
-            </div>
+            </button>
           </li>
-        );
-      })}
-    </ul>
+        ))}
+      </ul>
+
+      {/* Ampliação. As imagens de origem são pequenas — o print menor tem
+          326px de largura — então isto mostra a imagem inteira no maior
+          tamanho que a tela permite, e não um zoom de verdade. Mais que isso
+          seria esticar pixel que não existe. */}
+      {ampliada ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Depoimento de cliente"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+        >
+          <button
+            type="button"
+            aria-label="Fechar"
+            onClick={() => setAmpliada(null)}
+            className="absolute inset-0 cursor-zoom-out"
+          />
+          {/* Caixa de tamanho definido com a imagem preenchendo por dentro.
+              Com `w-auto` a largura do elemento dependia da imagem baixada, e a
+              imagem baixada dependia da largura: o Next resolvia esse laço
+              servindo a menor versão possível, e a foto "ampliada" saía com
+              149px — menor que a miniatura. Medido. */}
+          <div className="relative h-[88svh] w-[92vw]">
+            <Image
+              src={urlDaMidia(ampliada.arquivo)}
+              alt={ampliada.texto_alt ?? ""}
+              fill
+              sizes="92vw"
+              className="object-contain"
+            />
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }

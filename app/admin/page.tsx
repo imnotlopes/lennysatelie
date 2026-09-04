@@ -2,8 +2,11 @@ import Link from "next/link";
 import { Cartao } from "@/components/admin/cartao";
 import { GraficoCliques } from "@/components/admin/grafico-cliques";
 import { getResumoPainel } from "@/lib/queries/analytics";
+import { exigirSessao } from "@/lib/admin/sessao";
 
 export default async function DashboardPage() {
+  await exigirSessao();
+
   const resumo = await getResumoPainel();
 
   return (
@@ -67,20 +70,32 @@ export default async function DashboardPage() {
                 <table className="w-full min-w-96 text-left">
                   <thead>
                     <tr className="border-b border-line">
-                      <th scope="col" className="p-3 text-2xs tracking-caps uppercase text-ink-muted">
+                      <th
+                        scope="col"
+                        className="p-3 text-2xs tracking-caps uppercase text-ink-muted"
+                      >
                         Vestido
                       </th>
-                      <th scope="col" className="p-3 text-2xs tracking-caps uppercase text-ink-muted">
+                      <th
+                        scope="col"
+                        className="p-3 text-2xs tracking-caps uppercase text-ink-muted"
+                      >
                         Visitas
                       </th>
-                      <th scope="col" className="p-3 text-2xs tracking-caps uppercase text-ink-muted">
+                      <th
+                        scope="col"
+                        className="p-3 text-2xs tracking-caps uppercase text-ink-muted"
+                      >
                         Cliques
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     {resumo.ranking.map((item) => (
-                      <tr key={item.produtoId} className="border-b border-line last:border-0">
+                      <tr
+                        key={item.produtoId}
+                        className="border-b border-line last:border-0"
+                      >
                         <td className="p-3 text-xs text-ink">
                           <Link
                             href={`/acervo/${item.slug}`}

@@ -2,8 +2,11 @@ import Link from "next/link";
 import { estilosBotao } from "@/components/ui";
 import { TabelaCupons } from "@/components/admin/tabela-cupons";
 import { getCuponsComMetrica } from "@/lib/queries/admin";
+import { exigirSessao } from "@/lib/admin/sessao";
 
 export default async function CuponsPage() {
+  await exigirSessao();
+
   const cupons = await getCuponsComMetrica();
 
   return (
@@ -20,10 +23,7 @@ export default async function CuponsPage() {
           </p>
         </div>
 
-        <Link
-          href="/admin/cupons/novo"
-          className={estilosBotao()}
-        >
+        <Link href="/admin/cupons/novo" className={estilosBotao()}>
           Novo cupom
         </Link>
       </header>

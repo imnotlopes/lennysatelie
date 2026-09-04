@@ -1,7 +1,10 @@
 import { FormularioConfiguracoes } from "@/components/admin/formulario-configuracoes";
 import { getConfiguracoes } from "@/lib/queries";
+import { exigirSessao } from "@/lib/admin/sessao";
 
 export default async function ConfiguracoesPage() {
+  await exigirSessao();
+
   const { contato, whatsappTemplate } = await getConfiguracoes();
 
   return (

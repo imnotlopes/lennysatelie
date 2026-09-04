@@ -220,15 +220,52 @@ export async function moverMidia(
   // Já está na ponta: nada a fazer, e isso não é erro.
   if (!vizinha) return { ok: true };
 
-  await supabase.from("midias").update({ ordem: vizinha.ordem }).eq("id", atual.id);
-  await supabase.from("midias").update({ ordem: atual.ordem }).eq("id", vizinha.id);
+  // As duas gravações são conferidas. Sem isso, uma falha deixava as duas
+  // mídias com o mesmo número de ordem e as setas paravam de funcionar, em
+  // silêncio: a tela dizia que tinha salvado.
+  const [a, b] = await Promise.all([
+    supabase.from("midias").update({ ordem: vizinha.ordem }).eq("id", atual.id),
+    supabase.from("midias").update({ ordem: atual.ordem }).eq("id", vizinha.id),
+  ]);
+
+  if (a.error || b.error) {
+    return { ok: false, erro: "Não foi possível mudar a ordem." };
+  }
 
   revalidar();
   return { ok: true };
 }
 
+/**
+ * Apaga a mídia e o arquivo dela no bucket.
+ *
+ * O arquivo sai primeiro: se a linha sumisse antes, o caminho iria junto e o
+ * arquivo ficaria órfão no bucket para sempre. Era o que acontecia — cada foto
+ * trocada pelo painel deixava resíduo permanente.
+ *
+ * Só arquivos do bucket são apagados. Caminho que começa com barra veio junto
+ * com o código, mora em /public e não é nosso para remover.
+ */
 export async function excluirMidia(id: string): Promise<ResultadoAcao> {
   const supabase = await createClient();
+
+  const { data: midia } = await supabase
+    .from("midias")
+    .select("arquivo")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (midia && !midia.arquivo.startsWith("/")) {
+    const { error } = await supabase.storage
+      .from("produtos")
+      .remove([midia.arquivo]);
+    // Falha ao apagar o arquivo não impede tirar a imagem do site: melhor um
+    // órfão no bucket do que uma foto que não sai da página.
+    if (error) {
+      console.error("Falha ao apagar arquivo da mídia:", error.message);
+    }
+  }
+
   const { error } = await supabase.from("midias").delete().eq("id", id);
   if (error) return { ok: false, erro: "Não foi possível excluir." };
 

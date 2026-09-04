@@ -2,8 +2,11 @@ import { FormularioProduto } from "@/components/admin/formulario-produto";
 import { PRODUTO_VAZIO } from "@/lib/admin/valores-iniciais";
 import { getEtiquetas } from "@/lib/queries";
 import { getCategoriasAdmin, getProdutosAdmin } from "@/lib/queries/admin";
+import { exigirSessao } from "@/lib/admin/sessao";
 
 export default async function NovoProdutoPage() {
+  await exigirSessao();
+
   const [categorias, produtos, etiquetas] = await Promise.all([
     getCategoriasAdmin(),
     getProdutosAdmin(),
@@ -11,7 +14,9 @@ export default async function NovoProdutoPage() {
   ]);
 
   const cores = [
-    ...new Set(produtos.map((p) => p.cor).filter((c): c is string => Boolean(c))),
+    ...new Set(
+      produtos.map((p) => p.cor).filter((c): c is string => Boolean(c)),
+    ),
   ].sort((a, b) => a.localeCompare(b, "pt-BR"));
 
   return (

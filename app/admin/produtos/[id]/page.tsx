@@ -8,12 +8,15 @@ import {
   getProdutoAdminPorId,
   getProdutosAdmin,
 } from "@/lib/queries/admin";
+import { exigirSessao } from "@/lib/admin/sessao";
 
 export default async function EditarProdutoPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await exigirSessao();
+
   const { id } = await params;
   const produto = await getProdutoAdminPorId(id);
   if (!produto) notFound();
@@ -25,7 +28,9 @@ export default async function EditarProdutoPage({
   ]);
 
   const cores = [
-    ...new Set(produtos.map((p) => p.cor).filter((c): c is string => Boolean(c))),
+    ...new Set(
+      produtos.map((p) => p.cor).filter((c): c is string => Boolean(c)),
+    ),
   ].sort((a, b) => a.localeCompare(b, "pt-BR"));
 
   return (
