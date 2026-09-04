@@ -15,10 +15,16 @@ export async function ComoFunciona() {
   const destino = montarDestinos(contato.whatsapp, contato.instagram);
 
   return (
-    <section className="bg-surface-alt">
-      <Container className="flex flex-col gap-8 py-12">
+    <section>
+      <Container className="folha gap-8">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <Heading as={2} size="display-sm" revelar>
+          <Heading
+            as={2}
+            size="display-sm"
+            revelar
+            rotulo="Do primeiro contato à festa"
+            filete
+          >
             Como funciona o nosso ateliê
           </Heading>
           <Link
@@ -52,7 +58,8 @@ export async function ComoFunciona() {
               key={passo.acao.rotulo}
               href={destino[passo.acao.destino]}
               className={estilosBotao({
-                variant: passo.acao.destino === "acervo" ? "outline" : "primary",
+                variant:
+                  passo.acao.destino === "acervo" ? "outline" : "primary",
                 size: "lg",
               })}
             >

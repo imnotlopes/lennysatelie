@@ -44,6 +44,15 @@ export interface HeadingProps {
    * destruir a marcação, e nesse caso o título aparece normal.
    */
   revelar?: boolean;
+  /**
+   * Rótulo pequeno acima do título, em caixa alta.
+   *
+   * Diz do que a seção trata antes de o título dizer como. Custa uma linha e
+   * dá hierarquia: sem ele o título flutua sozinho no começo do bloco.
+   */
+  rotulo?: string;
+  /** Traço fino abaixo do título, para encabeçar o texto em vez de flutuar. */
+  filete?: boolean;
   className?: string;
   children: ReactNode;
 }
@@ -52,6 +61,8 @@ export function Heading({
   as = 2,
   size,
   revelar = false,
+  rotulo,
+  filete = false,
   className,
   children,
 }: HeadingProps) {
@@ -59,7 +70,7 @@ export function Heading({
   const resolved = size ?? defaultSizeByLevel[as];
   const quebravel = revelar && typeof children === "string";
 
-  return (
+  const titulo = (
     <Tag
       {...(quebravel
         ? {
@@ -75,5 +86,20 @@ export function Heading({
     >
       {quebravel ? <TextoEmPalavras texto={children} /> : children}
     </Tag>
+  );
+
+  // Sem rótulo nem filete o título sai sozinho, sem embrulho a mais no HTML.
+  if (!rotulo && !filete) return titulo;
+
+  return (
+    <div className="flex flex-col gap-3">
+      {rotulo ? (
+        <span className="text-2xs tracking-caps uppercase text-ink-muted">
+          {rotulo}
+        </span>
+      ) : null}
+      {titulo}
+      {filete ? <span aria-hidden="true" className="filete" /> : null}
+    </div>
   );
 }

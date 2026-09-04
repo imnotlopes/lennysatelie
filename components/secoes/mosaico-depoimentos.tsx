@@ -62,7 +62,9 @@ export function MosaicoDepoimentos({
     ).matches;
 
     const medir = () =>
-      setLugares(window.innerWidth >= 1025 ? LUGARES_DESKTOP : LUGARES_INICIAIS);
+      setLugares(
+        window.innerWidth >= 1025 ? LUGARES_DESKTOP : LUGARES_INICIAIS,
+      );
     medir();
     window.addEventListener("resize", medir);
     return () => window.removeEventListener("resize", medir);

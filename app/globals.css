@@ -291,21 +291,35 @@
   overflow: hidden;
 }
 
-/* A marca `data-revelacao` no <html> vem de um script embutido no layout. Sem
-   ela nada abaixo se esconde, e o site aparece inteiro — foi assim que um
-   titulo sumiu quando o JavaScript falhou: as palavras ficavam deslocadas
-   dentro da janela esperando um observador que nunca chegou. */
+/* O SENTIDO DA REGRA, QUE JÁ ESTEVE INVERTIDO
+   -------------------------------------------
+   Antes o conteúdo nascia escondido e só o JavaScript podia mostrá-lo: uma
+   marca no <html> deslocava as palavras para fora da janela, e o observador de
+   rolagem as trazia de volta. Quem o observador não alcançasse ficava
+   invisível para sempre. Foi o que aconteceu com os títulos da home.
+
+   Agora é o contrário. Sem marca nenhuma, tudo está visível e legível. A marca
+   `data-visivel` que o observador escreve TOCA uma animação que parte do
+   escondido e termina no visível. O estado escondido só existe durante a
+   animação, e some sozinho quando ela acaba.
+
+   Texto que depende de JavaScript para aparecer é texto que some quando o
+   JavaScript falha. Efeito é enfeite; ler o título é o mínimo. */
 
 /* A camada de hover fica de fora: ela tem transform proprio, e duas regras
    disputando `transform` no mesmo elemento se anulam — a de maior
    especificidade ganha e a outra simplesmente nao acontece. */
-[data-revelacao="ativa"] [data-revelar="zoom"] > *:not(.card-foto-hover) {
-  transform: scale(1.08);
-  transition: transform 1.2s var(--ease-foto);
+[data-revelar="zoom"][data-visivel="true"] > *:not(.card-foto-hover) {
+  animation: foto-aproxima 1.2s var(--ease-foto) both;
 }
 
-[data-revelar="zoom"][data-visivel="true"] > * {
-  transform: scale(1);
+@keyframes foto-aproxima {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: none;
+  }
 }
 
 /* --- Título revelado palavra por palavra ---
@@ -325,27 +339,27 @@
   display: inline-block;
 }
 
-[data-revelacao="ativa"] .palavra__interior {
-  transform: translateY(110%);
-  transition: transform 0.9s var(--ease-entrada);
+[data-visivel="true"] .palavra__interior {
+  animation: palavra-sobe 0.9s var(--ease-entrada) both;
   /* 60ms em vez dos 40ms da referencia: com a curva mais suave, 40ms fazia as
      palavras subirem quase juntas e a cascata sumia. */
-  transition-delay: calc(var(--i, 0) * 60ms);
+  animation-delay: calc(var(--i, 0) * 60ms);
 }
 
-[data-visivel="true"] .palavra__interior {
-  transform: translateY(0);
+@keyframes palavra-sobe {
+  from {
+    transform: translateY(110%);
+  }
+  to {
+    transform: none;
+  }
 }
 
-/* Quem pediu menos movimento vê o resultado, não o caminho. A regra geral de
-   `prefers-reduced-motion` lá em cima já zera a duração, mas o estado inicial
-   deslocado continuaria valendo até o observador disparar — e se ele nunca
-   disparar, o título ficaria invisível. Aqui o ponto de partida some. */
+/* Quem pediu menos movimento vê o resultado, não o caminho. */
 @media (prefers-reduced-motion: reduce) {
-  [data-revelar="zoom"] > *,
-  .palavra__interior {
-    transform: none !important;
-    transition: none !important;
+  [data-revelar="zoom"][data-visivel="true"] > *,
+  [data-visivel="true"] .palavra__interior {
+    animation: none;
   }
 }
 
@@ -452,6 +466,83 @@
 
 @media (prefers-reduced-motion: reduce) {
   .capa-entrando {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+   Folhas
+   ==========================================================================
+   Cada assunto ocupa quase uma tela e fica centrado nela, em vez de as seções
+   se enfileirarem em blocos de mesma altura. A diferença é de leitura: numa
+   pilha o olho varre tudo de uma vez e nada ganha importância; em folhas a
+   pessoa lê um assunto por vez.
+
+   88svh e não 100: um naco da folha seguinte tem que aparecer embaixo, senão
+   a página parece ter acabado e ninguém rola.
+
+   O ritmo depende das folhas ALTERNAREM fundo. Duas claras seguidas se fundem
+   numa só e o efeito se perde. */
+
+.folha {
+  display: flex;
+  min-height: 88svh;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: calc(var(--spacing) * 12);
+}
+
+/* Para blocos densos, onde travar a altura só criaria vão vazio. */
+.folha-curta {
+  display: flex;
+  min-height: 60svh;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: calc(var(--spacing) * 12);
+}
+
+/* Traço fino abaixo do título. Custa uma linha e dá estrutura à seção: o
+   título deixa de flutuar sobre o texto e passa a encabeçá-lo. */
+.filete {
+  display: block;
+  height: 1px;
+  width: 3.5rem;
+  background-color: var(--color-accent);
+}
+
+/* ==========================================================================
+   Entrada escalonada do hero
+   ==========================================================================
+   O hero está acima da dobra, então não depende do observador de rolagem: a
+   animação começa junto com a página. Cada elemento entra com um atraso a
+   mais, na ordem em que se lê — rótulo, título, traço, texto, botões.
+
+   Sem isto tudo aparecia no mesmo quadro, e o hero era a primeira coisa que
+   dava a impressão de site parado. */
+
+.hero-entra > * {
+  animation: hero-entra 0.8s var(--ease-entrada) both;
+}
+
+.hero-entra > *:nth-child(1) { animation-delay: 0.1s }
+.hero-entra > *:nth-child(2) { animation-delay: 0.22s }
+.hero-entra > *:nth-child(3) { animation-delay: 0.34s }
+.hero-entra > *:nth-child(4) { animation-delay: 0.46s }
+.hero-entra > *:nth-child(5) { animation-delay: 0.58s }
+
+@keyframes hero-entra {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-entra > * {
     animation: none;
   }
 }

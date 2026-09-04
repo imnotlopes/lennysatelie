@@ -23,10 +23,16 @@ export async function Feedbacks() {
   if (!mensagens.length && !fotos.length) return null;
 
   return (
-    <div className="bg-surface-alt">
-      <Container as="section" className="flex flex-col gap-6 py-12">
+    <div>
+      <Container as="section" className="folha gap-6">
         <div className="flex flex-col gap-2">
-          <Heading as={2} size="display-sm" revelar>
+          <Heading
+            as={2}
+            size="display-sm"
+            revelar
+            rotulo="Quem já vestiu"
+            filete
+          >
             O que elas dizem depois
           </Heading>
           <p className="max-w-prose text-xs text-ink-muted">

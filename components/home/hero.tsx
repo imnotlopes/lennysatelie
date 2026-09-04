@@ -59,7 +59,7 @@ export async function Hero() {
   const reveza = fotos.length > 1;
 
   return (
-    <section className="relative -mt-16 flex h-[100svh] min-h-125 items-center justify-center overflow-hidden">
+    <section className="relative -mt-16 flex h-[100svh] min-h-125 items-center overflow-hidden">
       {/* O -mt-16 puxa o hero para debaixo do header sticky (h-16 = 80px), que
           é o que permite o header ficar transparente por cima da imagem. */}
       {reveza ? (
@@ -89,24 +89,43 @@ export async function Hero() {
           // 100vw volta a ser a conta certa.
           sizes="(max-aspect-ratio: 3/2) 150vh, 100vw"
           style={
-            reveza
-              ? ({ "--i": indice } as React.CSSProperties)
-              : { opacity: 1 }
+            reveza ? ({ "--i": indice } as React.CSSProperties) : { opacity: 1 }
           }
           className="hero-foto object-cover"
         />
       ))}
 
       {/* Véu escuro sutil, só o suficiente para o texto passar em AA. */}
-      <div aria-hidden="true" className="absolute inset-0 bg-black/35" />
+      {/* Véu mais forte à esquerda, onde o texto fica, e quase transparente à
+          direita, onde só há foto. Um véu chapado escurece o vestido inteiro
+          para proteger um texto que ocupa um terço da tela. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/25"
+      />
 
-      <div className="relative z-10 flex flex-col items-center gap-6 px-4 text-center">
-        <h1 className="font-display text-display-lg leading-tight tracking-default text-ink-inverse">
-          Lennys Ateliê
+      {/* Alinhado à esquerda, e não centrado. Centrado, os três blocos têm o
+          mesmo peso e o olho não sabe por onde começar; encostados na margem
+          eles viram uma coluna que se lê de cima para baixo.
+
+          `hero-entra` escalona a entrada: rótulo, título, traço, texto e botão
+          aparecem em sequência, na ordem em que se lê. */}
+      <div className="hero-entra relative z-10 mx-auto flex w-full max-w-content flex-col items-start gap-5 px-4 lg:px-12">
+        <span className="text-2xs tracking-caps uppercase text-ink-inverse/80">
+          Jandira, São Paulo
+        </span>
+
+        <h1 className="max-w-2xl font-display text-display-lg leading-tight tracking-default text-ink-inverse text-balance">
+          Vestidos de festa para alugar
         </h1>
-        <p className="max-w-prose text-sm leading-base text-ink-inverse">
-          Vestidos de festa para alugar, escolhidos peça por peça.
+
+        <span aria-hidden="true" className="filete" />
+
+        <p className="max-w-md text-sm leading-base text-ink-inverse/85">
+          Cada peça escolhida uma a uma, com horário marcado e ajuste feito no
+          seu corpo.
         </p>
+
         <Link
           href="/acervo"
           className={estilosBotao({ variant: "inverse", size: "lg" })}

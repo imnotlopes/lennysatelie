@@ -23,8 +23,8 @@ export async function CategoriasGrid() {
   }));
 
   return (
-    <Container as="section" className="flex flex-col gap-6 py-12">
-      <Heading as={2} size="display-sm" revelar>
+    <Container as="section" className="folha gap-6">
+      <Heading as={2} size="display-sm" revelar rotulo="O acervo" filete>
         Escolha por estilo
       </Heading>
 

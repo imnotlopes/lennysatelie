@@ -30,72 +30,80 @@ export async function SecaoVideos({ contato }: SecaoVideosProps) {
     : null;
 
   return (
-    <Container as="section" className="flex flex-col gap-6 py-12">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex flex-col gap-2">
-          <Heading as={2} size="display-sm" revelar>
-            Veja em movimento
-          </Heading>
-          <p className="max-w-prose text-xs text-ink-muted">
-            Nenhuma foto mostra o caimento de um vestido como ele andando.
-          </p>
-        </div>
+    <section className="bg-surface-alt">
+      <Container as="section" className="folha gap-6">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div className="flex flex-col gap-2">
+            <Heading
+              as={2}
+              size="display-sm"
+              revelar
+              rotulo="No Instagram"
+              filete
+            >
+              Veja em movimento
+            </Heading>
+            <p className="max-w-prose text-xs text-ink-muted">
+              Nenhuma foto mostra o caimento de um vestido como ele andando.
+            </p>
+          </div>
 
-        {perfil ? (
-          <a
-            href={perfil}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={estilosBotao({ variant: "outline", size: "md" })}
-          >
-            <IconeInstagram />
-            {handle}
-          </a>
-        ) : null}
-      </div>
-
-      <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-        {reels.map((reel, indice) => (
-          <li key={reel.id}>
+          {perfil ? (
             <a
-              href={reel.url ?? "#"}
+              href={perfil}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative block aspect-9/16 overflow-hidden bg-surface-alt"
+              className={estilosBotao({ variant: "outline", size: "md" })}
             >
-              <Image
-                src={urlDaMidia(reel.arquivo)}
-                alt=""
-                fill
-                loading="lazy"
-                placeholder="blur"
-                blurDataURL={BLUR_DATA_URL}
-                sizes="(min-width: 1025px) 22vw, 45vw"
-                className="object-cover transition-opacity duration-300 ease-brand group-hover:opacity-85"
-              />
-
-              <span
-                aria-hidden="true"
-                className="absolute inset-0 flex items-center justify-center"
-              >
-                <span className="flex size-11 items-center justify-center rounded-full bg-ink/55 backdrop-blur-sm transition-colors duration-200 ease-brand group-hover:bg-ink/75">
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="size-4 translate-x-px fill-ink-inverse"
-                    aria-hidden="true"
-                  >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </span>
-              </span>
-
-              <span className="sr-only">
-                Vídeo {indice + 1} do ateliê no Instagram, abre em nova aba
-              </span>
+              <IconeInstagram />
+              {handle}
             </a>
-          </li>
-        ))}
-      </ul>
-    </Container>
+          ) : null}
+        </div>
+
+        <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+          {reels.map((reel, indice) => (
+            <li key={reel.id}>
+              <a
+                href={reel.url ?? "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative block aspect-9/16 overflow-hidden bg-surface-alt"
+              >
+                <Image
+                  src={urlDaMidia(reel.arquivo)}
+                  alt=""
+                  fill
+                  loading="lazy"
+                  placeholder="blur"
+                  blurDataURL={BLUR_DATA_URL}
+                  sizes="(min-width: 1025px) 22vw, 45vw"
+                  className="object-cover transition-opacity duration-300 ease-brand group-hover:opacity-85"
+                />
+
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <span className="flex size-11 items-center justify-center rounded-full bg-ink/55 backdrop-blur-sm transition-colors duration-200 ease-brand group-hover:bg-ink/75">
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="size-4 translate-x-px fill-ink-inverse"
+                      aria-hidden="true"
+                    >
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </span>
+                </span>
+
+                <span className="sr-only">
+                  Vídeo {indice + 1} do ateliê no Instagram, abre em nova aba
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </Container>
+    </section>
   );
 }

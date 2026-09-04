@@ -75,10 +75,7 @@ export function Carrossel({
       >
         {Array.isArray(children)
           ? children.map((filho, i) => (
-              <div
-                key={i}
-                className={cn("shrink-0 snap-start", larguraItem)}
-              >
+              <div key={i} className={cn("shrink-0 snap-start", larguraItem)}>
                 {filho}
               </div>
             ))
