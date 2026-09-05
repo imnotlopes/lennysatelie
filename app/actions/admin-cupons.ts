@@ -149,16 +149,38 @@ export async function alternarCupomAtivo(
   return { ok: true };
 }
 
+/**
+ * Apaga o cupom de vez.
+ *
+ * Barrado quando o cupom já foi usado: apagar levaria junto a única prova de
+ * quantas locações vieram daquela influenciadora, e essa conta é o motivo de
+ * o cupom existir. Nesse caso o caminho é desligar, que tira o desconto do ar
+ * e preserva o histórico.
+ */
 export async function excluirCupom(id: string): Promise<ResultadoAcao> {
   const supabase = await createClient();
-  const { error } = await supabase.from("cupons").delete().eq("id", id);
 
-  if (error) {
+  const { data: cupom } = await supabase
+    .from("cupons")
+    .select("codigo, usos")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!cupom) return { ok: false, erro: "Esse cupom não existe mais." };
+
+  if (cupom.usos > 0) {
     return {
       ok: false,
-      erro: "Não foi possível excluir. Se o cupom já teve uso, desative em vez de apagar.",
+      erro: `${cupom.codigo} já foi usado ${cupom.usos} vez(es) e apagar levaria essa conta junto. Desligue o cupom no lugar: ele para de dar desconto e o histórico fica.`,
     };
   }
+
+  // Os cliques registrados apontam para ele. Saem antes, senão a chave
+  // estrangeira barra a exclusão com uma mensagem que ninguém entende.
+  await supabase.from("eventos").delete().eq("cupom_id", id);
+
+  const { error } = await supabase.from("cupons").delete().eq("id", id);
+  if (error) return { ok: false, erro: "Não foi possível apagar o cupom." };
 
   revalidatePath("/admin/cupons");
   return { ok: true };

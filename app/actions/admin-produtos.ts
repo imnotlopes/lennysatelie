@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
   centavosParaReais,
+  gerarSlug,
   produtoSchema,
   type ProdutoFormulario,
 } from "@/lib/admin/produto-schema";
@@ -46,7 +47,9 @@ function traduzirErro(mensagem: string): string {
 function paraBanco(dados: ProdutoFormulario) {
   return {
     nome: dados.nome,
-    slug: dados.slug,
+    // Vazio vira o nome em formato de endereço — é o que o campo já fazia
+    // sozinho ao digitar, e agora vale também se ele chegar em branco.
+    slug: dados.slug.trim() || gerarSlug(dados.nome),
     descricao: dados.descricao?.trim() || null,
     preco_locacao: centavosParaReais(dados.precoCentavos),
     preco_original: centavosParaReais(dados.precoOriginalCentavos ?? null),

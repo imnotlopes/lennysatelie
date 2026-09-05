@@ -28,12 +28,20 @@ export const produtoSchema = z
       .min(2, "Escreva o nome do vestido.")
       .max(120, "Nome muito longo. Use até 120 caracteres."),
 
+    /**
+     * Aceita vazio: quem preenche é o servidor, a partir do nome.
+     *
+     * Antes era obrigatório, e como o campo se preenche sozinho ao digitar o
+     * nome, enviar o formulário em branco mostrava DOIS erros — "escreva o
+     * nome" e "o endereço não pode ficar vazio" — para uma falha só. A dona
+     * corrigia o nome e o segundo erro sumia sozinho, o que faz o painel
+     * parecer instável.
+     */
     slug: z
       .string()
       .trim()
-      .min(2, "O endereço da página não pode ficar vazio.")
-      .regex(
-        /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      .refine(
+        (v) => v === "" || /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v),
         "Use apenas letras minúsculas, números e hífen. Sem acento e sem espaço.",
       ),
 

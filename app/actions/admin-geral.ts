@@ -84,9 +84,12 @@ export async function excluirCategoria(id: string): Promise<ResultadoAcao> {
     .eq("categoria_id", id);
 
   if (count && count > 0) {
+    // "vestido(s)" com parêntese é jeito de programador escrever. Quem lê é a
+    // dona do ateliê.
+    const peças = count === 1 ? "1 vestido" : `${count} vestidos`;
     return {
       ok: false,
-      erro: `Esta categoria tem ${count} vestido(s). Mova essas peças para outra categoria antes de apagar.`,
+      erro: `Esta coleção tem ${peças}. Mova essas peças para outra coleção antes de apagar.`,
     };
   }
 
