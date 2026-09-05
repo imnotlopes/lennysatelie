@@ -33,7 +33,7 @@ existe**, então use o que a Vercel deu:
 NEXT_PUBLIC_SITE_URL=https://lennysatelie.vercel.app
 ```
 
-Sem ela, o site assume `https://lennysatelie.com.br`. Enquanto esse domínio
+Sem ela, o site assume `https://www.lennysatelie.com.br`. Enquanto esse domínio
 não estiver apontando para a Vercel, o canonical de toda página, o sitemap
 inteiro e o link de cupom que a dona copia do painel apontam para um endereço
 que não resolve — e o Google indexa o canonical, não a página onde ele está.
@@ -62,11 +62,103 @@ No primeiro deploy você ainda não sabe o endereço, então ponha um palpite em
 terminar. Trocar a variável e clicar em **Redeploy** resolve.
 
 Depois, em **Settings > Domains**, aponte o domínio definitivo — e **volte na
-variável** para o endereço novo.
+variável** para o endereço novo. O passo a passo está na seção seguinte.
 
 > É de `NEXT_PUBLIC_SITE_URL` que saem o canonical, o sitemap, o Open Graph e
 > o link do cupom que vai para a influenciadora. Com o valor errado, o Google
 > indexa endereço que não existe. Nenhum código muda: só a variável.
+
+## 4. Apontar o domínio www.lennysatelie.com.br
+
+### O endereço canônico é UM só
+
+O site foi configurado com **`www`**. Isso precisa valer nos dois lugares:
+
+- No código, em `lib/admin/site.ts` (já está)
+- Na Vercel, marcando `www.lennysatelie.com.br` como **Primary Domain**
+
+Se um disser `www` e o outro disser o apex, o canonical de toda página aponta
+para um endereço diferente do que a visitante está vendo, e o Google trata os
+dois como páginas duplicadas competindo entre si. Para inverter e usar o apex,
+troque nos **dois** lugares, nunca em um só.
+
+### 4.1 Registrar o domínio
+
+`.com.br` se registra no [registro.br](https://registro.br), e exige CPF ou
+CNPJ do titular. **Registre em nome da Lennys, não no seu** — domínio no nome
+de terceiro é dor de cabeça no dia em que alguém precisa renovar ou transferir.
+
+Anote a data de vencimento. `.com.br` não avisa com insistência, e domínio
+vencido tira o site do ar.
+
+### 4.2 Adicionar o domínio na Vercel
+
+Em **Settings > Domains**, adicione os dois:
+
+1. `www.lennysatelie.com.br` — e marque como **Primary**
+2. `lennysatelie.com.br` — a Vercel cria sozinha o redirecionamento 301 para o
+   www
+
+Os dois são necessários. Quem digitar o endereço sem `www` precisa chegar ao
+mesmo lugar, com redirecionamento permanente — senão o Google indexa os dois.
+
+### 4.3 Criar os registros de DNS
+
+A Vercel mostra os valores exatos na própria tela de Domains, **e é de lá que
+você deve copiar** — os endereços dela mudam de tempos em tempos, e um valor
+decorado errado deixa o site fora do ar sem erro visível.
+
+O formato costuma ser:
+
+| Tipo | Nome | Valor |
+|---|---|---|
+| `A` | `@` (o apex) | o IP que a Vercel mostrar |
+| `CNAME` | `www` | o destino que a Vercel mostrar |
+
+No registro.br isso fica em **Editar Zona DNS**. A propagação leva de minutos
+a algumas horas; a Vercel emite o certificado HTTPS sozinha assim que o DNS
+responder.
+
+### 4.4 Trocar a variável e refazer o deploy
+
+```
+NEXT_PUBLIC_SITE_URL=https://www.lennysatelie.com.br
+```
+
+Em **Settings > Environment Variables**, e depois **Redeploy**. Sem o redeploy
+a variável nova não entra: ela é lida na hora de compilar.
+
+### 4.5 Conferir depois que subir
+
+```bash
+curl -sI https://lennysatelie.com.br | head -3
+```
+
+Tem que responder `301` apontando para o `www`.
+
+```bash
+curl -s https://www.lennysatelie.com.br | grep -o 'rel="canonical" href="[^"]*"'
+```
+
+Tem que dizer `https://www.lennysatelie.com.br`, sem barra no fim e sem
+`vercel.app`. Se aparecer o endereço da Vercel, a variável não foi trocada ou
+faltou o redeploy.
+
+Confira também o sitemap:
+
+```bash
+curl -s https://www.lennysatelie.com.br/sitemap.xml | head -5
+```
+
+Todos os endereços ali devem começar com `https://www.lennysatelie.com.br`.
+
+### 4.6 Só depois disso
+
+- **Google Search Console**: registre a propriedade e envie o sitemap
+- **Perfil da Empresa no Google**: o ateliê já aparece no Maps, então é
+  reivindicar o perfil existente e pôr o endereço do site nele. Para negócio
+  local isso pesa mais que qualquer ajuste de página
+- Atualizar o link na bio do Instagram
 
 ## 4. Criar o acesso da dona
 

@@ -16,7 +16,18 @@
  * Sem a variável, cai no domínio definitivo — que é o certo depois que ele
  * estiver apontando para a Vercel.
  */
-const PADRAO = "https://lennysatelie.com.br";
+/**
+ * Com `www.`, e isso é uma escolha, não um detalhe.
+ *
+ * O endereço canônico precisa ser UM só. Se o código disser `www` e a Vercel
+ * servir o apex — ou o contrário —, o canonical de toda página aponta para um
+ * lugar diferente do que a visitante está vendo, e o Google trata os dois como
+ * páginas duplicadas disputando entre si.
+ *
+ * Escolhido `www` porque foi o que o Edson pediu. Para inverter, troque aqui e
+ * marque o apex como domínio principal na Vercel — nos dois lugares, sempre.
+ */
+const PADRAO = "https://www.lennysatelie.com.br";
 
 /** Tira a barra final, se alguém colar o endereço com ela. */
 function normalizar(url: string): string {

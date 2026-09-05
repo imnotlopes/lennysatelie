@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
 /* -------------------------------------------------------------------------- */
 
 /**
- * A influenciadora divulga `lennysatelie.com.br/acervo?cupom=MARIANA10`. O
+ * A influenciadora divulga `www.lennysatelie.com.br/acervo?cupom=GIOVANNA`. O
  * código é validado contra o banco e guardado em cookie por 30 dias — a
  * cliente pode voltar depois, por outro caminho, e o desconto continua
  * valendo. É isso que transforma o cupom em métrica de campanha.

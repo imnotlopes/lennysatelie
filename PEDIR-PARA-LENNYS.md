@@ -176,8 +176,20 @@ consulta" no site. Se o preço existe, é melhor mostrar.
 
 ### 5.1 Endereço do site na internet
 
-O site está programado para `lennysatelie.com.br`, que ainda não foi
-registrado. Ela precisa decidir o endereço definitivo e comprar o domínio.
+O site está programado para `www.lennysatelie.com.br`, que ainda **não foi
+registrado** — conferi e o endereço não responde.
+
+O que ela precisa fazer, ou autorizar alguém a fazer por ela:
+
+- Registrar no [registro.br](https://registro.br). Exige CPF ou CNPJ
+- **Registrar no nome dela**, não no de quem está montando o site. Domínio no
+  nome de terceiro vira problema no dia de renovar ou transferir
+- Anotar a data de vencimento. Domínio vencido tira o site do ar, e o aviso
+  do `.com.br` é discreto
+
+Enquanto não existir, o site funciona no endereço que a Vercel dá, mas o
+Google indexa um endereço que não resolve. O passo a passo técnico está no
+`DEPLOY.md`.
 
 ### 5.2 Cor de destaque
 
