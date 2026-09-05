@@ -50,13 +50,17 @@ export function UploadUmaFoto({
     setEnviando(true);
     try {
       const comprimida = await comprimirImagem(arquivo);
-      const caminho = `site/${crypto.randomUUID()}.webp`;
+      // A extensão e o tipo vêm do que foi REALMENTE gerado. Antes eram
+      // fixos em webp, e quando a compressão caía para outro formato — no
+      // Safari do iPhone, que não gera webp — subia um PNG chamado `.webp`,
+      // servido como `image/webp`. Achado na auditoria.
+      const caminho = `site/${crypto.randomUUID()}.${comprimida.formato}`;
 
       const supabase = createClient();
       const { error } = await supabase.storage
         .from("produtos")
         .upload(caminho, comprimida.arquivo, {
-          contentType: "image/webp",
+          contentType: comprimida.arquivo.type,
           upsert: false,
         });
 

@@ -152,6 +152,13 @@ export function MobileDrawer({
 
         {vendoColecoes ? (
           <nav aria-label="Coleções" className="flex flex-col px-4 py-4">
+            <Link
+              href="/acervo"
+              onClick={fechar}
+              className="border-b border-line py-3 text-sm tracking-wide text-ink-muted transition-colors duration-200 ease-brand hover:text-accent-ink"
+            >
+              Ver o acervo inteiro
+            </Link>
             {colecoes.map((c) => (
               <Link
                 key={c.slug}
@@ -171,34 +178,47 @@ export function MobileDrawer({
                   ? pathname === "/"
                   : pathname.startsWith(item.href);
 
+              // As coleções penduram no Acervo, que é a página delas. Soltas
+              // no fim da lista, depois de "Contato", pareciam outra seção do
+              // site — e não são: são recortes do acervo.
+              //
+              // Dois alvos na mesma linha, cada um com o seu papel: o texto
+              // leva ao acervo inteiro, a seta abre a lista de coleções.
+              const temColecoes =
+                item.href === "/acervo" && colecoes.length > 0;
+
               return (
-                <Link
+                <div
                   key={item.href}
-                  href={item.href}
-                  onClick={fechar}
-                  aria-current={ativo ? "page" : undefined}
-                  className={cn(
-                    "border-b border-line py-3 text-sm tracking-wide",
-                    "transition-colors duration-200 ease-brand hover:text-accent-ink",
-                    ativo ? "text-accent-ink" : "text-ink",
-                  )}
+                  className="flex items-center gap-2 border-b border-line"
                 >
-                  {item.rotulo}
-                </Link>
+                  <Link
+                    href={item.href}
+                    onClick={fechar}
+                    aria-current={ativo ? "page" : undefined}
+                    className={cn(
+                      "flex-1 py-3 text-sm tracking-wide",
+                      "transition-colors duration-200 ease-brand hover:text-accent-ink",
+                      ativo ? "text-accent-ink" : "text-ink",
+                    )}
+                  >
+                    {item.rotulo}
+                  </Link>
+
+                  {temColecoes ? (
+                    <button
+                      type="button"
+                      onClick={() => setVendoColecoes(true)}
+                      aria-label="Ver as coleções"
+                      aria-expanded={false}
+                      className="flex size-11 shrink-0 items-center justify-center text-ink transition-colors duration-200 ease-brand hover:text-accent-ink"
+                    >
+                      <IconeAvancar />
+                    </button>
+                  ) : null}
+                </div>
               );
             })}
-
-            {colecoes.length ? (
-              <button
-                type="button"
-                onClick={() => setVendoColecoes(true)}
-                aria-expanded={false}
-                className="flex items-center justify-between border-b border-line py-3 text-left text-sm tracking-wide text-ink transition-colors duration-200 ease-brand hover:text-accent-ink"
-              >
-                Coleções
-                <IconeAvancar />
-              </button>
-            ) : null}
           </nav>
         )}
       </div>

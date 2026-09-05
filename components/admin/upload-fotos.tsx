@@ -61,11 +61,13 @@ export function UploadFotos({ valor, aoMudar, aoAvisar }: UploadFotosProps) {
             atual.map((e, i) => (i === indice ? { ...e, progresso: 50 } : e)),
           );
 
-          const caminho = `produtos/${crypto.randomUUID()}.webp`;
+          // Extensão e tipo do que foi realmente gerado — ver a nota em
+          // `upload-uma-foto.tsx`.
+          const caminho = `produtos/${crypto.randomUUID()}.${comprimida.formato}`;
           const { error } = await supabase.storage
             .from("produtos")
             .upload(caminho, comprimida.arquivo, {
-              contentType: "image/webp",
+              contentType: comprimida.arquivo.type,
               upsert: false,
             });
 
