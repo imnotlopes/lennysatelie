@@ -1,24 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BLUR_DATA_URL, urlDaMidia } from "@/lib/images";
 import type { Midia } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 
-/**
- * Quanto tempo passa entre uma troca e a seguinte.
- *
- * Antes eram 4 segundos e TODOS os quadros trocavam de uma vez. Como cada
- * imagem tem proporção própria, toda troca mudava a altura de todo quadro, as
- * colunas se rebalanceavam e a seção inteira pulava — junto com o que estava
- * embaixo dela. Era isso que dava a sensação de dureza.
- *
- * Agora troca um quadro por vez: só uma coluna se reorganiza, e o resto fica
- * parado. Com um quadro de cada vez, 3 segundos ainda dá movimento constante
- * sem virar pisca-pisca.
- */
-const MS_POR_ITEM = 3000;
+/** Quanto tempo cada depoimento fica no lugar antes de dar a vez. */
+const MS_POR_ITEM = 4000;
 
 /**
  * Quantos lugares o servidor desenha antes de saber o tamanho da tela.
@@ -39,23 +28,26 @@ export interface MosaicoDepoimentosProps {
 }
 
 /**
- * Os depoimentos num mosaico que se reveza.
+ * Os depoimentos numa esteira, como as capas de coleção.
  *
- * Antes eram duas seções na home, com a seção de vídeos no meio. Agora é uma.
+ * DUAS CORREÇÕES MORAM AQUI
+ * -------------------------
+ * 1. Repetição. A versão anterior tinha uma fila por tipo e adiantava um lugar
+ *    de cada vez. Nessa conta o índice de um lugar encostava no do lugar
+ *    seguinte da mesma fila, e os dois mostravam a mesma imagem. Agora é uma
+ *    fila só e cada lugar mostra a posição `(atual + i)` dela — posições
+ *    consecutivas nunca coincidem, e são dezenove itens para no máximo oito
+ *    lugares.
  *
- * Em colunas, e não em grade de células fixas — e isso é a correção de um erro
- * meu. A primeira versão dava a cada lugar um tamanho fixo e recortava a imagem
- * para caber. Só que os prints de conversa são quase quadrados (326x390) e os
- * stories são 9:16: nenhum tamanho fixo serve aos dois. O resultado foi
- * mensagem cortada pela metade, sem nada legível.
+ * 2. Dureza. As capas de coleção são suaves porque todo cartão tem o mesmo
+ *    tamanho: a troca não mexe no layout. Aqui cada imagem tem a sua proporção,
+ *    então a grade se reorganizava a cada troca — o que saltava era a página,
+ *    não a animação. Agora o quadro tem tamanho fixo e a imagem entra INTEIRA
+ *    dentro dele, com sobra quando a proporção não bate.
  *
- * Aqui cada imagem entra inteira, na proporção que ela tem. A variação de
- * tamanho vem do conteúdo: o story é alto, o print é baixo. É o que dá a
- * aparência de mosaico sem cortar nada.
- *
- * Cada lugar mostra o item `(atual + posição)` da sua pilha e anda de um em um,
- * como as capas de coleção. Para assim que o dedo encosta, senão a visitante
- * começa a ler uma mensagem e ela troca no meio da frase.
+ * A sobra é de propósito. Recortar para preencher foi a primeira tentativa e
+ * cortou as mensagens pela metade — print de conversa existe para ser lido.
+ * Sobra clara em volta lê-se como cartão; mensagem cortada não se lê.
  */
 export function MosaicoDepoimentos({
   mensagens,
@@ -67,15 +59,24 @@ export function MosaicoDepoimentos({
   const [ampliada, setAmpliada] = useState<Midia | null>(null);
   const menosMovimento = useRef(false);
 
+  // Intercala mensagem e foto para os dois tipos aparecerem espalhados, em vez
+  // de todas as mensagens juntas e depois todas as fotos.
+  const fila = useMemo(() => {
+    const saida: Midia[] = [];
+    for (let i = 0; i < Math.max(mensagens.length, fotos.length); i++) {
+      if (mensagens[i]) saida.push(mensagens[i]);
+      if (fotos[i]) saida.push(fotos[i]);
+    }
+    return saida;
+  }, [mensagens, fotos]);
+
   useEffect(() => {
     menosMovimento.current = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
     const medir = () =>
-      setLugares(
-        window.innerWidth >= 1025 ? LUGARES_DESKTOP : LUGARES_INICIAIS,
-      );
+      setLugares(window.innerWidth >= 1025 ? LUGARES_DESKTOP : LUGARES_INICIAIS);
     medir();
     window.addEventListener("resize", medir);
     return () => window.removeEventListener("resize", medir);
@@ -83,8 +84,7 @@ export function MosaicoDepoimentos({
 
   // Também para enquanto uma imagem está aberta: girar por trás faria outra
   // aparecer no lugar dela assim que fechasse.
-  const gira =
-    !parado && !ampliada && mensagens.length + fotos.length > lugares;
+  const gira = !parado && !ampliada && fila.length > lugares;
 
   useEffect(() => {
     if (!gira || menosMovimento.current) return;
@@ -101,25 +101,9 @@ export function MosaicoDepoimentos({
     return () => window.removeEventListener("keydown", aoTeclar);
   }, [ampliada]);
 
-  // Cada lugar se serve sempre da mesma pilha, e alternando as duas para elas
-  // aparecerem misturadas. Pilha fixa importa para a fluidez: os stories têm
-  // todos a mesma proporção, então os lugares que os recebem nunca mudam de
-  // altura. Só os lugares de mensagem variam, e pouco.
-  //
-  // E só UM lugar troca a cada volta — o da vez, em rodízio. Trocar todos ao
-  // mesmo tempo reorganizava a grade inteira.
-  const vezDe = lugares > 0 ? atual % lugares : 0;
   const visiveis: Midia[] = [];
-  let iMensagem = 0;
-  let iFoto = 0;
-  for (let i = 0; i < lugares; i++) {
-    const pilha = i % 2 === 0 && mensagens.length ? mensagens : fotos;
-    if (!pilha.length) continue;
-    const indice = pilha === mensagens ? iMensagem++ : iFoto++;
-    // Quantas voltas completas este lugar já deu, mais uma se já chegou a vez
-    // dele nesta volta.
-    const voltas = Math.floor(atual / lugares) + (i <= vezDe ? 1 : 0);
-    visiveis.push(pilha[(indice + voltas) % pilha.length]);
+  for (let i = 0; i < lugares && fila.length; i++) {
+    visiveis.push(fila[(atual + i) % fila.length]);
   }
 
   return (
@@ -127,38 +111,40 @@ export function MosaicoDepoimentos({
       <ul
         onPointerDown={() => setParado(true)}
         onFocusCapture={() => setParado(true)}
-        className="columns-2 gap-3 lg:columns-4"
+        className="grid grid-cols-2 gap-3 lg:grid-cols-4"
       >
         {visiveis.map((item, posicao) => (
-          <li key={posicao} className="mb-3 break-inside-avoid">
+          <li key={posicao}>
             <button
               type="button"
               onClick={() => setAmpliada(item)}
               aria-label="Ver este depoimento maior"
-              className={cn(
-                "block w-full cursor-zoom-in overflow-hidden bg-surface-raised",
-                "transition-opacity duration-200 ease-brand hover:opacity-90",
-                // Só o quadro que acabou de trocar anima, e esmaecendo no
-                // lugar. O deslize de 24px que havia antes, em oito quadros ao
-                // mesmo tempo, era movimento demais para uma seção que a
-                // pessoa está tentando ler.
-                gira && posicao === vezDe && "depoimento-entrando",
-              )}
+              className="block w-full cursor-zoom-in"
             >
-              <Image
+              <div
+                // A chave muda quando o depoimento daquele lugar muda, o que
+                // remonta o bloco e dispara a entrada — mesma mecânica das
+                // capas de coleção.
                 key={item.id}
-                src={urlDaMidia(item.arquivo)}
-                alt={item.texto_alt ?? ""}
-                width={480}
-                height={640}
-                loading="lazy"
-                placeholder="blur"
-                blurDataURL={BLUR_DATA_URL}
-                sizes="(min-width: 1025px) 22vw, 45vw"
-                // Largura cheia e altura automática: a altura sai da proporção
-                // da própria imagem. É isto que impede o corte.
-                className="h-auto w-full"
-              />
+                className={cn(
+                  "relative aspect-4/5 w-full overflow-hidden bg-surface-raised",
+                  "transition-opacity duration-200 ease-brand hover:opacity-90",
+                  gira && "capa-entrando",
+                )}
+              >
+                <Image
+                  src={urlDaMidia(item.arquivo)}
+                  alt={item.texto_alt ?? ""}
+                  fill
+                  loading="lazy"
+                  placeholder="blur"
+                  blurDataURL={BLUR_DATA_URL}
+                  sizes="(min-width: 1025px) 22vw, 45vw"
+                  // `contain` e não `cover`: a imagem entra inteira, com sobra
+                  // quando a proporção não bate. Recortar cortaria a mensagem.
+                  className="object-contain p-2"
+                />
+              </div>
             </button>
           </li>
         ))}
