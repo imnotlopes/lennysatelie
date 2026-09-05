@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Karla, Marcellus } from "next/font/google";
 import "./globals.css";
+import { SITE } from "@/lib/admin/site";
 
 const karla = Karla({
   variable: "--font-karla",
@@ -21,8 +22,17 @@ const marcellus = Marcellus({
 });
 
 export const metadata: Metadata = {
-  title: "Lenny's Ateliê",
-  description: "Locação de vestidos de festa.",
+  /**
+   * Base para resolver endereços relativos nos metadados.
+   *
+   * Sem isto, a imagem de compartilhamento sai com caminho relativo, e nem
+   * WhatsApp nem Google resolvem caminho relativo — o cartão do link aparece
+   * sem imagem. O Next também avisa no build quando falta.
+   */
+  metadataBase: new URL(SITE),
+  title: "Lennys Ateliê",
+  description:
+    "Aluguel de vestidos de festa, noiva e casamento civil em Jandira, São Paulo.",
 };
 
 /**

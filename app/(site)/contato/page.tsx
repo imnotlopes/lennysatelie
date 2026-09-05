@@ -4,9 +4,11 @@ import { Container, Heading, estilosBotao } from "@/components/ui";
 import { getConfiguracoes } from "@/lib/queries";
 import { linkWhatsapp } from "@/lib/whatsapp";
 import { SITE } from "@/lib/admin/site";
+import { OG_IMAGEM } from "@/lib/seo";
 
 const TITULO = "Contato | Lennys Ateliê";
-const DESCRICAO = "Onde fica o Lennys Ateliê e como falar com a gente: WhatsApp, telefone, e-mail e endereço em Jandira, SP.";
+const DESCRICAO =
+  "Onde fica o Lennys Ateliê e como falar com a gente: WhatsApp, telefone, e-mail e endereço em Jandira, SP.";
 const CAMINHO = "/contato";
 
 export const metadata: Metadata = {
@@ -14,6 +16,7 @@ export const metadata: Metadata = {
   description: DESCRICAO,
   alternates: { canonical: `${SITE}${CAMINHO}` },
   openGraph: {
+    images: [OG_IMAGEM],
     title: TITULO,
     description: DESCRICAO,
     url: `${SITE}${CAMINHO}`,
@@ -51,8 +54,8 @@ export default async function ContatoPage() {
           Contato
         </Heading>
         <p className="text-base leading-base text-ink-muted">
-          O atendimento é com hora marcada, para você provar com calma. Chame
-          no WhatsApp que a gente encontra um horário.
+          O atendimento é com hora marcada, para você provar com calma. Chame no
+          WhatsApp que a gente encontra um horário.
         </p>
         <a
           href={linkWhatsapp(

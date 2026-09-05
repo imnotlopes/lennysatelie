@@ -17,10 +17,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const fixas: MetadataRoute.Sitemap = [
     { url: SITE, lastModified: agora, changeFrequency: "weekly", priority: 1 },
-    { url: `${SITE}/acervo`, lastModified: agora, changeFrequency: "daily", priority: 0.9 },
-    { url: `${SITE}/como-funciona`, lastModified: agora, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${SITE}/perguntas-frequentes`, lastModified: agora, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${SITE}/contato`, lastModified: agora, changeFrequency: "monthly", priority: 0.6 },
+    {
+      url: `${SITE}/acervo`,
+      lastModified: agora,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE}/como-funciona`,
+      lastModified: agora,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${SITE}/perguntas-frequentes`,
+      lastModified: agora,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${SITE}/contato`,
+      lastModified: agora,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    // Prioridade baixa de propósito: precisa estar indexada para ser
+    // encontrável, mas não disputa espaço com as páginas que vendem.
+    {
+      url: `${SITE}/privacidade`,
+      lastModified: agora,
+      changeFrequency: "yearly",
+      priority: 0.2,
+    },
   ];
 
   try {

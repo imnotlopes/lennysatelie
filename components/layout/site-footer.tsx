@@ -26,7 +26,8 @@ export async function SiteFooter() {
   // altura volta ao natural e o rodapé não incha.
   const linkRodape =
     "flex min-h-9 items-center text-xs text-ink-muted transition-colors duration-200 ease-brand hover:text-accent-ink sm:min-h-0";
-  const social = "flex size-9 items-center justify-center border border-line-strong text-ink transition-colors duration-200 ease-brand hover:border-accent hover:text-accent-ink";
+  const social =
+    "flex size-9 items-center justify-center border border-line-strong text-ink transition-colors duration-200 ease-brand hover:border-accent hover:text-accent-ink";
   const ano = new Date().getFullYear();
 
   return (
@@ -105,10 +106,16 @@ export async function SiteFooter() {
       </Container>
 
       <div className="border-t border-line">
-        <Container className="py-4">
+        <Container className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 py-4">
           <p className="text-2xs text-ink-muted">
             {ano} Lennys Ateliê. Todos os direitos reservados.
           </p>
+          <Link
+            href="/privacidade"
+            className="flex min-h-9 items-center text-2xs text-ink-muted transition-colors duration-200 ease-brand hover:text-accent-ink sm:min-h-0"
+          >
+            Privacidade
+          </Link>
         </Container>
       </div>
     </footer>

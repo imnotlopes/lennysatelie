@@ -9,6 +9,7 @@ import { SecaoVideos } from "@/components/secoes/videos";
 import { SITE } from "@/lib/admin/site";
 import { getConfiguracoes } from "@/lib/queries";
 import type { Metadata } from "next";
+import { OG_IMAGEM } from "@/lib/seo";
 
 const TITULO = "Lennys Ateliê | Aluguel de Vestidos de Festa em Jandira, SP";
 const DESCRICAO =
@@ -19,6 +20,7 @@ export const metadata: Metadata = {
   description: DESCRICAO,
   alternates: { canonical: SITE },
   openGraph: {
+    images: [OG_IMAGEM],
     title: TITULO,
     description: DESCRICAO,
     url: SITE,
@@ -26,7 +28,11 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     type: "website",
   },
-  twitter: { card: "summary_large_image", title: TITULO, description: DESCRICAO },
+  twitter: {
+    card: "summary_large_image",
+    title: TITULO,
+    description: DESCRICAO,
+  },
 };
 
 /**

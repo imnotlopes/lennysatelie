@@ -6,8 +6,19 @@ import { BLUR_DATA_URL, urlDaMidia } from "@/lib/images";
 import type { Midia } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 
-/** Quanto tempo cada depoimento fica no lugar antes de dar a vez. */
-const MS_POR_ITEM = 4000;
+/**
+ * Quanto tempo passa entre uma troca e a seguinte.
+ *
+ * Antes eram 4 segundos e TODOS os quadros trocavam de uma vez. Como cada
+ * imagem tem proporção própria, toda troca mudava a altura de todo quadro, as
+ * colunas se rebalanceavam e a seção inteira pulava — junto com o que estava
+ * embaixo dela. Era isso que dava a sensação de dureza.
+ *
+ * Agora troca um quadro por vez: só uma coluna se reorganiza, e o resto fica
+ * parado. Com um quadro de cada vez, 3 segundos ainda dá movimento constante
+ * sem virar pisca-pisca.
+ */
+const MS_POR_ITEM = 3000;
 
 /**
  * Quantos lugares o servidor desenha antes de saber o tamanho da tela.
@@ -90,9 +101,14 @@ export function MosaicoDepoimentos({
     return () => window.removeEventListener("keydown", aoTeclar);
   }, [ampliada]);
 
-  // Alterna as duas pilhas para as duas aparecerem misturadas, cada uma
-  // andando no seu próprio passo. Sem isso os seis stories dariam a volta bem
-  // antes das treze mensagens e ficariam se repetindo.
+  // Cada lugar se serve sempre da mesma pilha, e alternando as duas para elas
+  // aparecerem misturadas. Pilha fixa importa para a fluidez: os stories têm
+  // todos a mesma proporção, então os lugares que os recebem nunca mudam de
+  // altura. Só os lugares de mensagem variam, e pouco.
+  //
+  // E só UM lugar troca a cada volta — o da vez, em rodízio. Trocar todos ao
+  // mesmo tempo reorganizava a grade inteira.
+  const vezDe = lugares > 0 ? atual % lugares : 0;
   const visiveis: Midia[] = [];
   let iMensagem = 0;
   let iFoto = 0;
@@ -100,7 +116,10 @@ export function MosaicoDepoimentos({
     const pilha = i % 2 === 0 && mensagens.length ? mensagens : fotos;
     if (!pilha.length) continue;
     const indice = pilha === mensagens ? iMensagem++ : iFoto++;
-    visiveis.push(pilha[(atual + indice) % pilha.length]);
+    // Quantas voltas completas este lugar já deu, mais uma se já chegou a vez
+    // dele nesta volta.
+    const voltas = Math.floor(atual / lugares) + (i <= vezDe ? 1 : 0);
+    visiveis.push(pilha[(indice + voltas) % pilha.length]);
   }
 
   return (
@@ -119,7 +138,11 @@ export function MosaicoDepoimentos({
               className={cn(
                 "block w-full cursor-zoom-in overflow-hidden bg-surface-raised",
                 "transition-opacity duration-200 ease-brand hover:opacity-90",
-                gira && "capa-entrando",
+                // Só o quadro que acabou de trocar anima, e esmaecendo no
+                // lugar. O deslize de 24px que havia antes, em oito quadros ao
+                // mesmo tempo, era movimento demais para uma seção que a
+                // pessoa está tentando ler.
+                gira && posicao === vezDe && "depoimento-entrando",
               )}
             >
               <Image

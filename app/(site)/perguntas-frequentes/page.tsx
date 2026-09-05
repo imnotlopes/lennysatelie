@@ -4,9 +4,11 @@ import { FAQ } from "@/lib/faq";
 import { getConfiguracoes } from "@/lib/queries";
 import { linkWhatsapp } from "@/lib/whatsapp";
 import { SITE } from "@/lib/admin/site";
+import { OG_IMAGEM } from "@/lib/seo";
 
 const TITULO = "Perguntas frequentes | Lennys Ateliê";
-const DESCRICAO = "Dúvidas sobre prova, prazo, tamanho, ajustes e cuidados com o vestido alugado.";
+const DESCRICAO =
+  "Dúvidas sobre prova, prazo, tamanho, ajustes e cuidados com o vestido alugado.";
 const CAMINHO = "/perguntas-frequentes";
 
 export const metadata: Metadata = {
@@ -14,6 +16,7 @@ export const metadata: Metadata = {
   description: DESCRICAO,
   alternates: { canonical: `${SITE}${CAMINHO}` },
   openGraph: {
+    images: [OG_IMAGEM],
     title: TITULO,
     description: DESCRICAO,
     url: `${SITE}${CAMINHO}`,

@@ -74,8 +74,13 @@ export async function Hero() {
           src={urlDaMidia(foto.arquivo)}
           alt=""
           fill
+          // Só a primeira tem prioridade: ela é o LCP da home. As outras
+          // carregam em prioridade normal, e não `eager` como antes — cada
+          // uma só entra em cena 6 segundos depois da anterior, tempo de
+          // sobra. Com uma foto no hero o `eager` não custava nada; quando a
+          // dona pôs três pelo painel, virou 377KB baixados de uma vez antes
+          // de qualquer outra coisa da página. Medido.
           priority={indice === 0}
-          loading={indice === 0 ? undefined : "eager"}
           placeholder="blur"
           blurDataURL={BLUR_DATA_URL}
           // Não é "100vw". A caixa ocupa a tela inteira e o corte é por

@@ -5,9 +5,11 @@ import { Container, Heading, estilosBotao } from "@/components/ui";
 import { PASSOS } from "@/lib/como-funciona";
 import { getConfiguracoes } from "@/lib/queries";
 import { SITE } from "@/lib/admin/site";
+import { OG_IMAGEM } from "@/lib/seo";
 
 const TITULO = "Como funciona | Lennys Ateliê";
-const DESCRICAO = "Da escolha do vestido à devolução: como funciona o aluguel no Lennys Ateliê, em Jandira, SP.";
+const DESCRICAO =
+  "Da escolha do vestido à devolução: como funciona o aluguel no Lennys Ateliê, em Jandira, SP.";
 const CAMINHO = "/como-funciona";
 
 export const metadata: Metadata = {
@@ -15,6 +17,7 @@ export const metadata: Metadata = {
   description: DESCRICAO,
   alternates: { canonical: `${SITE}${CAMINHO}` },
   openGraph: {
+    images: [OG_IMAGEM],
     title: TITULO,
     description: DESCRICAO,
     url: `${SITE}${CAMINHO}`,
@@ -79,7 +82,10 @@ export default async function ComoFuncionaPage() {
                   {...(passo.acao.destino === "whatsapp"
                     ? { target: "_blank", rel: "noopener noreferrer" }
                     : {})}
-                  className={estilosBotao({ size: "lg", className: "self-start" })}
+                  className={estilosBotao({
+                    size: "lg",
+                    className: "self-start",
+                  })}
                 >
                   {passo.acao.rotulo}
                 </Link>

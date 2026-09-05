@@ -26,6 +26,7 @@ import {
 } from "@/lib/queries";
 import { SITE } from "@/lib/admin/site";
 import { linkWhatsapp } from "@/lib/whatsapp";
+import { OG_IMAGEM } from "@/lib/seo";
 
 const TITULO = "Acervo | Aluguel de Vestidos de Festa | Lennys Ateliê";
 const DESCRICAO =
@@ -39,6 +40,7 @@ export const metadata: Metadata = {
   // separada, diluindo o acervo em centenas de duplicatas.
   alternates: { canonical: `${SITE}/acervo` },
   openGraph: {
+    images: [OG_IMAGEM],
     title: TITULO,
     description: DESCRICAO,
     url: `${SITE}/acervo`,
@@ -46,7 +48,11 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     type: "website",
   },
-  twitter: { card: "summary_large_image", title: TITULO, description: DESCRICAO },
+  twitter: {
+    card: "summary_large_image",
+    title: TITULO,
+    description: DESCRICAO,
+  },
 };
 
 export default async function AcervoPage({
@@ -173,7 +179,6 @@ export default async function AcervoPage({
           )}
         </div>
       </div>
-
     </Container>
   );
 }
@@ -186,8 +191,8 @@ function EstadoVazio({ whatsapp }: { whatsapp: string }) {
       </Heading>
       <p className="max-w-prose text-sm leading-base text-ink-muted">
         Tente soltar um dos filtros. Se você já sabe o que procura, chame a
-        gente no WhatsApp: o acervo muda toda semana e nem tudo entra no site
-        no mesmo dia.
+        gente no WhatsApp: o acervo muda toda semana e nem tudo entra no site no
+        mesmo dia.
       </p>
       <div className="flex flex-wrap gap-3">
         <Link

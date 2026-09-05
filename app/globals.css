@@ -546,3 +546,25 @@
     animation: none;
   }
 }
+
+/* Depoimento que acabou de entrar no lugar.
+   Só esmaece: sem deslocamento. A seção é para ser lida, e texto que chega
+   deslizando obriga o olho a esperar a peça parar. */
+.depoimento-entrando {
+  animation: depoimento-entra 0.55s var(--ease-entrada) both;
+}
+
+@keyframes depoimento-entra {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .depoimento-entrando {
+    animation: none;
+  }
+}
