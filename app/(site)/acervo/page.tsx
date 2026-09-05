@@ -28,9 +28,10 @@ import { SITE } from "@/lib/admin/site";
 import { linkWhatsapp } from "@/lib/whatsapp";
 import { OG_IMAGEM } from "@/lib/seo";
 
-const TITULO = "Acervo | Aluguel de Vestidos de Festa | Lennys Ateliê";
+const TITULO =
+  "Acervo | Vestidos de Noiva e de Festa para Alugar | Lennys Ateliê";
 const DESCRICAO =
-  "Todos os vestidos disponíveis para locação no Lennys Ateliê, em Jandira, SP. Filtre por categoria, cor, tamanho e preço.";
+  "Vestidos de noiva, cerimônia, casamento civil, debutante e festa para alugar no Lennys Ateliê, em Jandira, SP. Filtre por coleção, cor, tamanho e preço.";
 
 export const metadata: Metadata = {
   title: TITULO,

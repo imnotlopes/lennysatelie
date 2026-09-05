@@ -1,15 +1,22 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { IconeFechar } from "@/components/icons";
 import type { ItemNavegacao } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
+/** O que o menu precisa saber de uma coleção. */
+export interface ColecaoDoMenu {
+  slug: string;
+  nome: string;
+}
+
 export interface MobileDrawerProps {
   aberto: boolean;
   aoFechar: () => void;
   itens: ItemNavegacao[];
+  colecoes: ColecaoDoMenu[];
   pathname: string;
 }
 
@@ -30,8 +37,19 @@ export function MobileDrawer({
   aberto,
   aoFechar,
   itens,
+  colecoes,
   pathname,
 }: MobileDrawerProps) {
+  // Segundo nível do menu, como no site que o Edson trouxe de referência: a
+  // lista de coleções desliza por cima da principal, com uma volta no topo.
+  const [vendoColecoes, setVendoColecoes] = useState(false);
+
+  // Fechar volta ao primeiro nível. Sem isto a gaveta reabria na lista de
+  // coleções, e quem quisesse "Contato" tinha que voltar antes.
+  const fechar = useCallback(() => {
+    setVendoColecoes(false);
+    aoFechar();
+  }, [aoFechar]);
   const painelRef = useRef<HTMLDivElement>(null);
   const focoAnterior = useRef<HTMLElement | null>(null);
 
@@ -49,7 +67,7 @@ export function MobileDrawer({
     function aoTeclar(evento: KeyboardEvent) {
       if (evento.key === "Escape") {
         evento.preventDefault();
-        aoFechar();
+        fechar();
         return;
       }
 
@@ -77,7 +95,7 @@ export function MobileDrawer({
       document.body.style.overflow = overflowOriginal;
       focoAnterior.current?.focus();
     };
-  }, [aberto, aoFechar]);
+  }, [aberto, fechar]);
 
   return (
     <div
@@ -89,7 +107,7 @@ export function MobileDrawer({
         type="button"
         tabIndex={-1}
         aria-label="Fechar menu"
-        onClick={aoFechar}
+        onClick={fechar}
         className={cn(
           "fixed inset-0 z-40 bg-surface-alt/90",
           "transition-opacity duration-300 ease-soft",
@@ -109,10 +127,22 @@ export function MobileDrawer({
           aberto ? "translate-x-0" : "translate-x-full",
         )}
       >
-        <div className="flex items-center justify-end border-b border-line px-4 py-3">
+        <div className="flex items-center justify-between border-b border-line px-4 py-3">
+          {vendoColecoes ? (
+            <button
+              type="button"
+              onClick={() => setVendoColecoes(false)}
+              className="flex min-h-9 items-center gap-2 text-xs tracking-caps uppercase text-ink transition-colors duration-200 ease-brand hover:text-accent-ink"
+            >
+              <IconeVoltar />
+              Coleções
+            </button>
+          ) : (
+            <span />
+          )}
           <button
             type="button"
-            onClick={aoFechar}
+            onClick={fechar}
             className="flex size-9 items-center justify-center text-ink transition-colors duration-200 ease-brand hover:text-accent-ink"
           >
             <IconeFechar />
@@ -120,31 +150,94 @@ export function MobileDrawer({
           </button>
         </div>
 
-        <nav className="flex flex-col px-4 py-4">
-          {itens.map((item) => {
-            const ativo =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
-
-            return (
+        {vendoColecoes ? (
+          <nav aria-label="Coleções" className="flex flex-col px-4 py-4">
+            {colecoes.map((c) => (
               <Link
-                key={item.href}
-                href={item.href}
-                onClick={aoFechar}
-                aria-current={ativo ? "page" : undefined}
-                className={cn(
-                  "border-b border-line py-3 text-sm tracking-wide",
-                  "transition-colors duration-200 ease-brand hover:text-accent-ink",
-                  ativo ? "text-accent-ink" : "text-ink",
-                )}
+                key={c.slug}
+                href={`/acervo?categoria=${c.slug}`}
+                onClick={fechar}
+                className="border-b border-line py-3 text-sm tracking-wide text-ink transition-colors duration-200 ease-brand hover:text-accent-ink"
               >
-                {item.rotulo}
+                {c.nome}
               </Link>
-            );
-          })}
-        </nav>
+            ))}
+          </nav>
+        ) : (
+          <nav className="flex flex-col px-4 py-4">
+            {itens.map((item) => {
+              const ativo =
+                item.href === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(item.href);
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={fechar}
+                  aria-current={ativo ? "page" : undefined}
+                  className={cn(
+                    "border-b border-line py-3 text-sm tracking-wide",
+                    "transition-colors duration-200 ease-brand hover:text-accent-ink",
+                    ativo ? "text-accent-ink" : "text-ink",
+                  )}
+                >
+                  {item.rotulo}
+                </Link>
+              );
+            })}
+
+            {colecoes.length ? (
+              <button
+                type="button"
+                onClick={() => setVendoColecoes(true)}
+                aria-expanded={false}
+                className="flex items-center justify-between border-b border-line py-3 text-left text-sm tracking-wide text-ink transition-colors duration-200 ease-brand hover:text-accent-ink"
+              >
+                Coleções
+                <IconeAvancar />
+              </button>
+            ) : null}
+          </nav>
+        )}
       </div>
     </div>
+  );
+}
+
+/** Seta para a direita: entra no segundo nível. */
+function IconeAvancar() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className="size-4"
+    >
+      <path d="M9 6l6 6-6 6" />
+    </svg>
+  );
+}
+
+/** Seta para a esquerda: volta ao primeiro nível. */
+function IconeVoltar() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className="size-4"
+    >
+      <path d="M15 6l-6 6 6 6" />
+    </svg>
   );
 }

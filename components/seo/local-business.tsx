@@ -1,4 +1,5 @@
 import { SITE } from "@/lib/admin/site";
+import { horariosParaSchema } from "@/lib/horarios";
 import type { Contato } from "@/lib/queries";
 
 /**
@@ -18,11 +19,13 @@ export function LocalBusinessJsonLd({ contato }: { contato: Contato }) {
     "@type": "ClothingStore",
     name: "Lennys Ateliê",
     description:
-      "Ateliê de locação de vestidos de festa, noiva e casamento civil em Jandira, São Paulo.",
+      "Ateliê de aluguel de vestido de noiva, casamento civil, cerimônia e festa em Jandira, São Paulo.",
     url: SITE,
     telephone: `+${contato.whatsapp}`,
     email: contato.email,
-    image: `${SITE}/marca/simbolo.png`,
+    // A imagem de compartilhamento, e não o símbolo da marca: o Google pede
+    // imagem grande aqui, e o símbolo tem 102x160.
+    image: `${SITE}/og.png`,
     address: {
       "@type": "PostalAddress",
       streetAddress: "Rua Nicolau Mayevsky, 128 - Jardim Sol Nascente",
@@ -36,27 +39,13 @@ export function LocalBusinessJsonLd({ contato }: { contato: Contato }) {
         : null,
       contato.facebook || null,
     ].filter(Boolean),
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-        ],
-        opens: "09:00",
-        closes: "18:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: "Saturday",
-        opens: "09:00",
-        closes: "14:00",
-      },
-    ],
+    openingHoursSpecification: horariosParaSchema(),
     priceRange: "$$",
+    // Link para o ponto no mapa. Ajuda o Google a casar o endereço declarado
+    // aqui com a ficha do negócio no Maps.
+    hasMap: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      "Lennys Ateliê, Rua Nicolau Mayevsky, 128 - Jardim Sol Nascente, Jandira, SP",
+    )}`,
   };
 
   return (

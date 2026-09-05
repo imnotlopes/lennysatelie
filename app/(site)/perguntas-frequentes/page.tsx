@@ -6,9 +6,10 @@ import { linkWhatsapp } from "@/lib/whatsapp";
 import { SITE } from "@/lib/admin/site";
 import { OG_IMAGEM } from "@/lib/seo";
 
-const TITULO = "Perguntas frequentes | Lennys Ateliê";
+const TITULO =
+  "Perguntas Frequentes sobre Aluguel de Vestido | Lennys Ateliê";
 const DESCRICAO =
-  "Dúvidas sobre prova, prazo, tamanho, ajustes e cuidados com o vestido alugado.";
+  "Dúvidas sobre alugar vestido de noiva ou de festa: prova, prazo, sinal, tamanho, ajustes e cuidados com a peça.";
 const CAMINHO = "/perguntas-frequentes";
 
 export const metadata: Metadata = {

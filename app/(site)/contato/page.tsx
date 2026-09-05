@@ -5,10 +5,12 @@ import { getConfiguracoes } from "@/lib/queries";
 import { linkWhatsapp } from "@/lib/whatsapp";
 import { SITE } from "@/lib/admin/site";
 import { OG_IMAGEM } from "@/lib/seo";
+import { MapaAtelie } from "@/components/secoes/mapa-atelie";
+import { HORARIOS } from "@/lib/horarios";
 
-const TITULO = "Contato | Lennys Ateliê";
+const TITULO = "Contato e Endereço em Jandira, SP | Lennys Ateliê";
 const DESCRICAO =
-  "Onde fica o Lennys Ateliê e como falar com a gente: WhatsApp, telefone, e-mail e endereço em Jandira, SP.";
+  "Onde fica o Lennys Ateliê, ateliê de aluguel de vestido de noiva em Jandira, SP: mapa, endereço, telefone, WhatsApp e horário de atendimento.";
 const CAMINHO = "/contato";
 
 export const metadata: Metadata = {
@@ -30,18 +32,6 @@ export const metadata: Metadata = {
     description: DESCRICAO,
   },
 };
-
-/**
- * Horário de atendimento, informado pela Lennys.
- *
- * Fica aqui e não em `configuracoes` porque ela não pediu para editar isso
- * pelo painel. Se um dia mudar de horário e quiser autonomia, viramos campo.
- */
-const HORARIOS = [
-  { dias: "Segunda a sexta", horas: "10h às 18h30" },
-  { dias: "Sábado", horas: "10h às 15h" },
-  { dias: "Domingo", horas: "Fechado" },
-];
 
 export default async function ContatoPage() {
   const { contato } = await getConfiguracoes();
@@ -69,6 +59,8 @@ export default async function ContatoPage() {
           Agendar meu horário
         </a>
       </header>
+
+      <MapaAtelie contato={contato} semCabecalho />
 
       <div className="grid gap-12 md:grid-cols-2">
         <section className="flex flex-col gap-4">

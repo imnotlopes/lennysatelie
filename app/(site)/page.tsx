@@ -10,10 +10,11 @@ import { SITE } from "@/lib/admin/site";
 import { getConfiguracoes } from "@/lib/queries";
 import type { Metadata } from "next";
 import { OG_IMAGEM } from "@/lib/seo";
+import { MapaAtelie } from "@/components/secoes/mapa-atelie";
 
-const TITULO = "Lennys Ateliê | Aluguel de Vestidos de Festa em Jandira, SP";
+const TITULO = "Aluguel de Vestido de Noiva em Jandira, SP | Lennys Ateliê";
 const DESCRICAO =
-  "Vestidos de festa, noiva e casamento civil para alugar. Prova com hora marcada, ajuste incluso e reserva pelo WhatsApp.";
+  "Vestidos de noiva, casamento civil e festa para alugar em Jandira, SP. Prova com hora marcada, ajuste incluso e reserva pelo WhatsApp.";
 
 export const metadata: Metadata = {
   title: TITULO,
@@ -52,6 +53,7 @@ export default async function HomePage() {
       <ComoFunciona />
       <SecaoVideos contato={contato} />
       <Feedbacks />
+      <MapaAtelie contato={contato} />
       <FaixaWhatsapp />
     </main>
   );

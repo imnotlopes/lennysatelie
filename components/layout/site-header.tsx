@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { IconeBusca, IconeFechar, IconeMenu } from "@/components/icons";
 import { Container } from "@/components/ui";
 import { NAVEGACAO_PRINCIPAL } from "@/lib/navigation";
+import type { ColecaoDoMenu } from "./mobile-drawer";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { MobileDrawer } from "./mobile-drawer";
@@ -20,13 +21,19 @@ const LIMITE_SCROLL = 24;
  * sutil ao rolar. Nas demais rotas já nasce sólido, porque não existe hero
  * atrás dele.
  */
-export function SiteHeader() {
+export interface SiteHeaderProps {
+  /** Coleções do acervo, para o menu suspenso. Vêm do layout, que é servidor. */
+  colecoes: ColecaoDoMenu[];
+}
+
+export function SiteHeader({ colecoes }: SiteHeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
 
   const [rolou, setRolou] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
   const [buscaAberta, setBuscaAberta] = useState(false);
+  const [colecoesAbertas, setColecoesAbertas] = useState(false);
   const [termo, setTermo] = useState("");
   const buscaRef = useRef<HTMLInputElement>(null);
 
@@ -95,7 +102,7 @@ export function SiteHeader() {
                   ? pathname === "/"
                   : pathname.startsWith(item.href);
 
-              return (
+              const link = (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -108,6 +115,48 @@ export function SiteHeader() {
                 >
                   {item.rotulo}
                 </Link>
+              );
+
+              // Coleções pendura no Acervo, que é a página delas. Um item
+              // solto no menu levaria a lugar nenhum sozinho.
+              if (item.href !== "/acervo" || !colecoes.length) return link;
+
+              return (
+                <div
+                  key={item.href}
+                  className="relative"
+                  onMouseEnter={() => setColecoesAbertas(true)}
+                  onMouseLeave={() => setColecoesAbertas(false)}
+                >
+                  <div className="flex items-center gap-1">
+                    {link}
+                    <button
+                      type="button"
+                      aria-expanded={colecoesAbertas}
+                      aria-label="Ver as coleções"
+                      onClick={() => setColecoesAbertas((v) => !v)}
+                      className="text-current transition-colors duration-200 ease-brand hover:text-accent-ink"
+                    >
+                      <IconeSeta aberto={colecoesAbertas} />
+                    </button>
+                  </div>
+
+                  {colecoesAbertas ? (
+                    <ul className="absolute top-full left-0 z-40 flex w-56 flex-col border border-line bg-surface py-2 shadow-sm">
+                      {colecoes.map((c) => (
+                        <li key={c.slug}>
+                          <Link
+                            href={`/acervo?categoria=${c.slug}`}
+                            onClick={() => setColecoesAbertas(false)}
+                            className="block px-4 py-2 text-xs tracking-default text-ink transition-colors duration-200 ease-brand hover:text-accent-ink"
+                          >
+                            {c.nome}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </div>
               );
             })}
           </nav>
@@ -179,8 +228,30 @@ export function SiteHeader() {
         aberto={menuAberto}
         aoFechar={fecharMenu}
         itens={NAVEGACAO_PRINCIPAL}
+        colecoes={colecoes}
         pathname={pathname}
       />
     </>
+  );
+}
+
+/** Seta do menu de coleções. Gira ao abrir, para dizer que fechou. */
+function IconeSeta({ aberto }: { aberto: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={cn(
+        "size-3.5 transition-transform duration-200 ease-brand",
+        aberto && "rotate-180",
+      )}
+    >
+      <path d="M6 9l6 6 6-6" />
+    </svg>
   );
 }

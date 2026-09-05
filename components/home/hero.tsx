@@ -121,14 +121,14 @@ export async function Hero() {
         </span>
 
         <h1 className="max-w-2xl font-display text-display-lg leading-tight tracking-default text-ink-inverse text-balance">
-          Vestidos de festa para alugar
+          Vestidos de noiva e de festa para alugar
         </h1>
 
         <span aria-hidden="true" className="filete" />
 
         <p className="max-w-md text-sm leading-base text-ink-inverse/85">
-          Cada peça escolhida uma a uma, com horário marcado e ajuste feito no
-          seu corpo.
+          Noiva, casamento civil, cerimônia e festa. Prova com horário marcado e
+          ajuste feito no seu corpo.
         </p>
 
         <Link

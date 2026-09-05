@@ -7,9 +7,9 @@ import { getConfiguracoes } from "@/lib/queries";
 import { SITE } from "@/lib/admin/site";
 import { OG_IMAGEM } from "@/lib/seo";
 
-const TITULO = "Como funciona | Lennys Ateliê";
+const TITULO = "Como Alugar seu Vestido de Noiva | Lennys Ateliê";
 const DESCRICAO =
-  "Da escolha do vestido à devolução: como funciona o aluguel no Lennys Ateliê, em Jandira, SP.";
+  "Da prova à devolução: como funciona o aluguel de vestido de noiva e de festa no Lennys Ateliê, em Jandira, SP.";
 const CAMINHO = "/como-funciona";
 
 export const metadata: Metadata = {

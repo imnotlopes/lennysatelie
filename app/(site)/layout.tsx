@@ -4,7 +4,7 @@ import { ObservadorRevelacao } from "@/components/efeitos/observador-revelacao";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { WhatsappFloat } from "@/components/layout/whatsapp-float";
-import { getConfiguracoes, getCupomAtivo } from "@/lib/queries";
+import { getCategorias, getConfiguracoes, getCupomAtivo } from "@/lib/queries";
 import { linkWhatsapp } from "@/lib/whatsapp";
 
 /**
@@ -21,9 +21,10 @@ export default async function SiteLayout({
 }: {
   children: ReactNode;
 }) {
-  const [{ contato }, cupom] = await Promise.all([
+  const [{ contato }, cupom, colecoes] = await Promise.all([
     getConfiguracoes(),
     getCupomAtivo(),
+    getCategorias(),
   ]);
 
   return (
@@ -37,7 +38,7 @@ export default async function SiteLayout({
 
       {cupom ? <BannerCupom cupom={cupom} /> : null}
 
-      <SiteHeader />
+      <SiteHeader colecoes={colecoes} />
 
       <div id="conteudo" className="flex flex-1 flex-col">
         {children}

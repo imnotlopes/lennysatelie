@@ -75,7 +75,10 @@ export default async function PrivacidadePage() {
         <ul className="flex list-disc flex-col gap-2 pl-5">
           <li>Não pede cadastro, login nem senha para navegar.</li>
           <li>Não guarda seu nome, telefone ou e-mail em banco de dados.</li>
-          <li>Não usa Google Analytics, pixel do Facebook nem rastreadores.</li>
+          <li>
+            Não usa Google Analytics, pixel do Facebook nem rastreadores de
+            publicidade.
+          </li>
           <li>Não vende nem compartilha dados com anunciantes.</li>
         </ul>
       </Bloco>
@@ -105,6 +108,19 @@ export default async function PrivacidadePage() {
           Não guarda quem você é. Para removê-lo, basta limpar os cookies do
           site no seu navegador — o site continua funcionando igual, só sem o
           desconto aplicado automaticamente.
+        </p>
+      </Bloco>
+
+      <Bloco titulo="O mapa">
+        <p>
+          Na página inicial e no contato existe um mapa do Google mostrando onde
+          fica o ateliê. É a única coisa de terceiro no site: ao carregar o
+          mapa, seu navegador fala com o Google, que pode registrar esse acesso
+          segundo as regras dele.
+        </p>
+        <p>
+          O mapa só carrega quando você chega perto dele na página. Se você não
+          rolar até lá, nada é solicitado ao Google.
         </p>
       </Bloco>
 
