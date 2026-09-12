@@ -15,6 +15,7 @@ export async function registrarEvento(
   tipo: TipoEvento,
   produtoId?: string,
   cupomId?: string,
+  linkId?: string,
 ): Promise<void> {
   try {
     const supabase = createPublicClient();
@@ -23,6 +24,7 @@ export async function registrarEvento(
       tipo,
       produto_id: produtoId ?? null,
       cupom_id: cupomId ?? null,
+      link_id: linkId ?? null,
     });
 
     if (error) {

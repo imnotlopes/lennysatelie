@@ -9,6 +9,7 @@ import {
   IconeConfiguracoes,
   IconeCupons,
   IconeEtiquetas,
+  IconeLinks,
   IconeImagens,
   IconeInicio,
   IconeMais,
@@ -42,6 +43,7 @@ const PRINCIPAIS: Destino[] = [
 /** O que ela abre de vez em quando. Fica atrás do "Mais" no celular. */
 const SECUNDARIOS: Destino[] = [
   { href: "/admin/imagens", rotulo: "Imagens do site", icone: IconeImagens },
+  { href: "/admin/links", rotulo: "Página de links", icone: IconeLinks },
   { href: "/admin/etiquetas", rotulo: "Etiquetas", icone: IconeEtiquetas },
   {
     href: "/admin/configuracoes",

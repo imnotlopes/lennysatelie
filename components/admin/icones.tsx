@@ -77,6 +77,14 @@ export const IconeImagens: Icone = ({ className }) => (
   </Base>
 );
 
+/** Elo de corrente: a página de links. */
+export const IconeLinks: Icone = ({ className }) => (
+  <Base className={className}>
+    <path d="M10 13.5a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1.3 1.3" />
+    <path d="M14 10.5a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1.3-1.3" />
+  </Base>
+);
+
 /** Marcador de página: a etiqueta da peça. */
 export const IconeEtiquetas: Icone = ({ className }) => (
   <Base className={className}>
