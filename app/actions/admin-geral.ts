@@ -28,6 +28,9 @@ function revalidarSite() {
   // enquanto busca o novo por tras. Para quem acabou de salvar, ver o valor
   // antigo parece que o salvamento falhou.
   updateTag("configuracoes");
+  // Mesma razão, e a mesma armadilha: as categorias também vivem em cache por
+  // etiqueta desde que o build passou a quebrar por excesso de consultas.
+  updateTag("categorias");
 }
 
 export async function salvarCategoria(
