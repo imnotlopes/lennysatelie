@@ -2,18 +2,25 @@ import { createClient } from "@supabase/supabase-js";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { COOKIE_CUPOM, CUPOM_MAX_AGE, cupomEhValido } from "@/lib/cupom";
+import { HOST_LINKS, SITE } from "@/lib/admin/site";
 
 /**
- * Middleware do site. Faz duas coisas, nesta ordem:
+ * Middleware do site. Faz três coisas, nesta ordem:
  *
- * 1. Captura do cupom de influenciadora (`?cupom=`), em qualquer rota
- * 2. Proteção das rotas de /admin
+ * 1. Separa o subdomínio da página de links do site principal
+ * 2. Captura do cupom de influenciadora (`?cupom=`), em qualquer rota
+ * 3. Proteção das rotas de /admin
  *
- * A ordem importa: a captura do cupom termina em redirect, e um redirect
- * precisa sair antes de qualquer checagem de sessão — senão a visitante que
- * chega pelo link da influenciadora perderia o cupom no caminho.
+ * A ordem importa duas vezes. O subdomínio vem primeiro porque nada do site
+ * principal deve rodar nele — nem captura de cupom, nem painel. E a captura do
+ * cupom termina em redirect, que precisa sair antes de qualquer checagem de
+ * sessão, senão a visitante que chega pelo link da influenciadora perderia o
+ * cupom no caminho.
  */
 export async function middleware(request: NextRequest) {
+  const respostaLinks = tratarSubdominioDeLinks(request);
+  if (respostaLinks) return respostaLinks;
+
   const respostaCupom = await tratarCupom(request);
   if (respostaCupom) return respostaCupom;
 
@@ -22,6 +29,48 @@ export async function middleware(request: NextRequest) {
   }
 
   return NextResponse.next();
+}
+
+/* -------------------------------------------------------------------------- */
+/* Subdomínio da página de links                                              */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * `links.lennysatelie.com.br` serve UMA página, e só ela.
+ *
+ * A raiz do subdomínio é reescrita para `/links`. Reescrita e não redirect: a
+ * pessoa continua vendo o endereço limpo, sem `/links` grudado no fim.
+ *
+ * TODO O RESTO REDIRECIONA PARA O DOMÍNIO PRINCIPAL, e esta é a linha que
+ * importa de verdade. Sem ela, o mesmo aplicativo responde o site inteiro nos
+ * dois endereços: `links.lennysatelie.com.br/acervo` serviria as 240 peças, e
+ * o Google veria duas cópias do site competindo entre si. O objetivo do
+ * subdomínio é somar alcance; sem este redirect ele subtrai.
+ *
+ * 308 e não 302: o destino é permanente e o Google precisa consolidar o valor
+ * no domínio principal, em vez de manter as duas URLs no índice.
+ *
+ * Caminho com ponto passa direto — `robots.txt`, `sitemap.xml`, `icon.png`.
+ * Esses precisam existir no subdomínio por si, e os dois primeiros respondem
+ * conforme o host (ver `app/robots.ts` e `app/sitemap.ts`).
+ *
+ * Devolve `null` quando a requisição não é do subdomínio, para o fluxo seguir.
+ */
+function tratarSubdominioDeLinks(request: NextRequest) {
+  const host = request.headers.get("host")?.toLowerCase();
+  if (!host || host !== HOST_LINKS) return null;
+
+  const { pathname, search } = request.nextUrl;
+
+  if (pathname === "/") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/links";
+    return NextResponse.rewrite(url);
+  }
+
+  if (pathname.includes(".")) return NextResponse.next();
+
+  return NextResponse.redirect(new URL(`${pathname}${search}`, SITE), 308);
 }
 
 /* -------------------------------------------------------------------------- */

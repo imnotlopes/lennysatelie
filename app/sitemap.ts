@@ -1,5 +1,6 @@
+import { headers } from "next/headers";
 import type { MetadataRoute } from "next";
-import { SITE } from "@/lib/admin/site";
+import { HOST_LINKS, SITE, SITE_LINKS } from "@/lib/admin/site";
 import { getProdutoSlugs } from "@/lib/queries";
 
 /**
@@ -14,6 +15,25 @@ import { getProdutoSlugs } from "@/lib/queries";
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const agora = new Date();
+
+  /*
+    O subdomínio tem o próprio sitemap, com uma URL só.
+
+    Ele serve o mesmo aplicativo, então sem esta saída ele devolveria o sitemap
+    inteiro do site — 240 peças anunciadas a partir de um host que redireciona
+    todas elas. O rastreador gastaria a visita para receber 308 em cada uma.
+  */
+  const host = (await headers()).get("host")?.toLowerCase();
+  if (host === HOST_LINKS) {
+    return [
+      {
+        url: SITE_LINKS,
+        lastModified: agora,
+        changeFrequency: "monthly",
+        priority: 1,
+      },
+    ];
+  }
 
   const fixas: MetadataRoute.Sitemap = [
     { url: SITE, lastModified: agora, changeFrequency: "weekly", priority: 1 },

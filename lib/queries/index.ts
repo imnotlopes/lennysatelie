@@ -17,6 +17,8 @@ export type { Facetas, OpcaoFaceta } from "./facetas";
 export { getCupomByCodigo } from "./cupons";
 export { getCupomAtivo } from "./cupom-ativo";
 export { getMidias, getTodasMidias } from "./midias";
+export { getLinks, getDepoimentos, getLinksDoPainel } from "./links";
+export type { LinkComCliques } from "./links";
 export { getEtiquetas, getEtiquetasComUso } from "./etiquetas";
 export type { EtiquetaComUso } from "./etiquetas";
 

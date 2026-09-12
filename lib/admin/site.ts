@@ -35,3 +35,23 @@ function normalizar(url: string): string {
 }
 
 export const SITE = normalizar(process.env.NEXT_PUBLIC_SITE_URL || PADRAO);
+
+/**
+ * Subdomínio da página de links.
+ *
+ * Vive no mesmo projeto e no mesmo deploy: quem separa é o `middleware.ts`,
+ * pelo host da requisição. Para o Google, porém, subdomínio é OUTRO site —
+ * precisa de canonical próprio, robots próprio e cadastro separado no Search
+ * Console.
+ *
+ * Derivado do domínio principal para não existirem duas verdades: trocar
+ * `NEXT_PUBLIC_SITE_URL` no primeiro deploy leva os dois junto.
+ */
+const PADRAO_LINKS = "https://links.lennysatelie.com.br";
+
+export const SITE_LINKS = normalizar(
+  process.env.NEXT_PUBLIC_SITE_LINKS_URL || PADRAO_LINKS,
+);
+
+/** O host, sem protocolo. É o que o middleware compara. */
+export const HOST_LINKS = SITE_LINKS.replace(/^https?:\/\//, "");

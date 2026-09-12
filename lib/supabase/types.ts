@@ -23,7 +23,8 @@ export type TipoDesconto = "percentual" | "fixo";
 export type TipoEvento =
   | "visita_produto"
   | "cupom_aplicado"
-  | "clique_whatsapp";
+  | "clique_whatsapp"
+  | "clique_link";
 
 export interface Database {
   public: {
@@ -172,6 +173,7 @@ export interface Database {
           tipo: TipoEvento;
           produto_id: string | null;
           cupom_id: string | null;
+          link_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -179,6 +181,7 @@ export interface Database {
           tipo: TipoEvento;
           produto_id?: string | null;
           cupom_id?: string | null;
+          link_id?: string | null;
           created_at?: string;
         };
         Update: {
@@ -186,6 +189,7 @@ export interface Database {
           tipo?: TipoEvento;
           produto_id?: string | null;
           cupom_id?: string | null;
+          link_id?: string | null;
           created_at?: string;
         };
         Relationships: [
@@ -262,6 +266,80 @@ export interface Database {
         Relationships: [];
       };
 
+      links: {
+        Row: {
+          id: string;
+          titulo: string;
+          subtitulo: string | null;
+          icone: IconeLink;
+          url: string;
+          ordem: number;
+          ativo: boolean;
+          destaque: boolean;
+          created_at: string;
+          atualizado_em: string;
+        };
+        Insert: {
+          id?: string;
+          titulo: string;
+          subtitulo?: string | null;
+          icone: IconeLink;
+          url: string;
+          ordem?: number;
+          ativo?: boolean;
+          destaque?: boolean;
+          created_at?: string;
+          atualizado_em?: string;
+        };
+        Update: {
+          id?: string;
+          titulo?: string;
+          subtitulo?: string | null;
+          icone?: IconeLink;
+          url?: string;
+          ordem?: number;
+          ativo?: boolean;
+          destaque?: boolean;
+          created_at?: string;
+          atualizado_em?: string;
+        };
+        Relationships: [];
+      };
+
+      depoimentos: {
+        Row: {
+          id: string;
+          texto: string;
+          autor: string;
+          contexto: string | null;
+          ordem: number;
+          ativo: boolean;
+          created_at: string;
+          atualizado_em: string;
+        };
+        Insert: {
+          id?: string;
+          texto: string;
+          autor: string;
+          contexto?: string | null;
+          ordem?: number;
+          ativo?: boolean;
+          created_at?: string;
+          atualizado_em?: string;
+        };
+        Update: {
+          id?: string;
+          texto?: string;
+          autor?: string;
+          contexto?: string | null;
+          ordem?: number;
+          ativo?: boolean;
+          created_at?: string;
+          atualizado_em?: string;
+        };
+        Relationships: [];
+      };
+
       configuracoes: {
         Row: { chave: string; valor: Json };
         Insert: { chave: string; valor?: Json };
@@ -285,6 +363,25 @@ export type Produto = Database["public"]["Tables"]["produtos"]["Row"];
 export type Cupom = Database["public"]["Tables"]["cupons"]["Row"];
 export type Evento = Database["public"]["Tables"]["eventos"]["Row"];
 export type Configuracao = Database["public"]["Tables"]["configuracoes"]["Row"];
+export type Link = Database["public"]["Tables"]["links"]["Row"];
+export type Depoimento = Database["public"]["Tables"]["depoimentos"]["Row"];
+
+/**
+ * Os ícones que um link pode usar.
+ *
+ * Lista fechada, e o banco tem o mesmo CHECK. Os ícones são SVG escritos em
+ * `components/icons.tsx`, não vêm de biblioteca: um nome fora desta lista
+ * deixaria o card sem ícone e sem explicação. Acrescentar um ícone novo é
+ * tarefa de código, em três lugares — aqui, no CHECK e no mapa de
+ * `components/links/cartao-link.tsx`.
+ */
+export type IconeLink =
+  | "whatsapp"
+  | "instagram"
+  | "facebook"
+  | "site"
+  | "acervo"
+  | "email";
 
 /**
  * O que o público consegue ler de um cupom.
