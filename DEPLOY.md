@@ -160,7 +160,106 @@ Todos os endereços ali devem começar com `https://www.lennysatelie.com.br`.
   local isso pesa mais que qualquer ajuste de página
 - Atualizar o link na bio do Instagram
 
-## 4. Criar o acesso da dona
+## 5. Apontar links.lennysatelie.com.br
+
+A página de links mora no **mesmo projeto e no mesmo deploy** do site. Quem
+separa os dois é o `middleware.ts`, olhando o host da requisição. Então aqui
+não se cria projeto novo na Vercel — se acrescenta um domínio ao que já existe.
+
+### 5.1 Adicionar o domínio na Vercel, ANTES do DNS
+
+Nesta ordem de propósito: a Vercel só mostra o valor certo de DNS depois que o
+domínio está cadastrado, e é dela que o valor deve ser copiado.
+
+Em **Settings > Domains** do projeto do site (o mesmo, não um novo):
+
+1. **Add Domain** e escreva `links.lennysatelie.com.br`
+2. **NÃO marque como Primary.** O Primary continua sendo
+   `www.lennysatelie.com.br`. Marcar o subdomínio faria o canonical de todas as
+   páginas do site apontar para ele, e o Google passaria a tratar o site
+   inteiro como cópia da página de links
+3. A Vercel vai mostrar um aviso de "Invalid Configuration" com o registro que
+   falta. **Copie o valor dali**, não daqui: os endereços dela mudam de tempos
+   em tempos
+
+O valor costuma ser um CNAME apontando para `cname.vercel-dns.com`, mas confira
+na tela.
+
+### 5.2 Criar o registro no registro.br
+
+Entre em [registro.br](https://registro.br), abra o domínio
+`lennysatelie.com.br` e vá em **Editar Zona DNS**.
+
+Isso só funciona se o domínio estiver usando os servidores DNS do próprio
+registro.br. Se estiver delegado para outro lugar (Cloudflare, por exemplo), o
+registro precisa ser criado lá, não aqui.
+
+Acrescente uma linha:
+
+| Campo | O que escrever |
+|---|---|
+| Nome | `links` |
+| Tipo | `CNAME` |
+| Dados | o valor que a Vercel mostrou |
+
+Dois detalhes que derrubam quem faz pela primeira vez:
+
+- **No campo Nome vai só `links`**, e não o endereço inteiro. O registro.br
+  completa com o domínio sozinho. Escrever
+  `links.lennysatelie.com.br` ali cria `links.lennysatelie.com.br.lennysatelie.com.br`
+- **O valor do CNAME costuma precisar de ponto final**: `cname.vercel-dns.com.`
+  O registro.br avisa quando falta, mas nem sempre de forma clara
+
+Salve e confirme. A propagação leva de minutos a algumas horas.
+
+### 5.3 Esperar o certificado
+
+A Vercel emite o HTTPS sozinha assim que o DNS responder. Na tela de Domains o
+aviso de "Invalid Configuration" vira "Valid Configuration" — não precisa fazer
+nada além de esperar e recarregar a página.
+
+### 5.4 Conferir
+
+```bash
+curl -sI https://links.lennysatelie.com.br | head -3
+```
+
+Tem que responder `200`.
+
+```bash
+curl -sI https://links.lennysatelie.com.br/acervo | head -3
+```
+
+Tem que responder `308` apontando para `https://www.lennysatelie.com.br/acervo`.
+**Este é o teste que importa.** Se responder `200` com o acervo, a reescrita do
+middleware está servindo o site inteiro no subdomínio, e aí existem duas cópias
+do site competindo entre si no Google — o contrário do que o subdomínio serve.
+
+```bash
+curl -s https://links.lennysatelie.com.br | grep -o 'rel="canonical" href="[^"]*"'
+```
+
+Tem que dizer `https://links.lennysatelie.com.br`, e não o endereço do site.
+
+### 5.5 Variável de ambiente
+
+Só é necessária se o endereço for diferente do padrão. O código já assume
+`https://links.lennysatelie.com.br` quando a variável não existe:
+
+```
+NEXT_PUBLIC_SITE_LINKS_URL=https://links.lennysatelie.com.br
+```
+
+Se você a definir, precisa **Redeploy** depois: ela é lida na hora de compilar.
+
+### 5.6 Depois que subir
+
+- **Search Console**: cadastre `links.lennysatelie.com.br` como propriedade
+  **separada**. Para o Google, subdomínio é outro site — o sitemap do domínio
+  principal não cobre ele
+- Trocar o link da bio do Instagram para o novo endereço
+
+## 6. Criar o acesso da dona
 
 No painel do Supabase, **Authentication > Users > Add user > Create new user**:
 
@@ -170,7 +269,7 @@ No painel do Supabase, **Authentication > Users > Add user > Create new user**:
 
 Não existe cadastro público: essa é a única porta de entrada do painel.
 
-## 5. Conferir se está tudo de pé
+## 7. Conferir se está tudo de pé
 
 ```bash
 npm run verificar-banco

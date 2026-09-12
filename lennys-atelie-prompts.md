@@ -755,6 +755,72 @@ Lighthouse mobile acima de 90 em Performance e SEO, e o MANUAL.md compreensível
 
 ---
 
+# Pendências técnicas
+
+Não são funcionalidades novas: são falhas no que já está de pé. Por isso ficam
+separadas da Versão 2 — entram antes dela.
+
+## Nenhuma tabela registra quando um campo mudou
+
+A tabela `produtos` tem `created_at` e mais nada. Não existe `atualizado_em`.
+
+Na prática: dá para saber quando a peça foi cadastrada, e nunca quando o preço,
+a etiqueta, a descrição ou as fotos dela foram alterados. No dia em que a
+Lennys disser "eu não mexi nesse preço", não há onde conferir — nem para lhe
+dar razão, nem para mostrar que mexeu.
+
+Isso apareceu quando foi preciso descobrir se as etiquetas do acervo tinham
+sido postas por ela pelo painel ou escritas por engano em alguma sessão de
+desenvolvimento. Deu para responder olhando `created_at` de duas peças criadas
+no mesmo dia, o que foi sorte: bastava a etiqueta ter sido posta numa peça
+antiga e não haveria resposta nenhuma.
+
+O conserto é pequeno e vale para as outras tabelas do painel também
+(`categorias`, `cupons`, `midias`, `configuracoes`):
+
+```sql
+alter table produtos add column atualizado_em timestamptz not null default now();
+
+create or replace function marcar_atualizacao() returns trigger as $$
+begin
+  new.atualizado_em = now();
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger produtos_atualizado_em
+  before update on produtos
+  for each row execute function marcar_atualizacao();
+```
+
+Vale decidir junto se o painel passa a MOSTRAR essa data na listagem de peças.
+Uma coluna "alterado há 2 dias" responde sozinha a maior parte das perguntas
+que hoje exigem abrir o banco.
+
+O que isto **não** resolve: quem alterou. Para isso seria preciso guardar o
+usuário da sessão em cada escrita, o que é outro tamanho de trabalho. Como o
+painel tem uma dona só, a data resolve o caso real; se um dia houver duas
+pessoas com acesso, esta linha precisa ser revista.
+
+## O PEDIR-PARA-LENNYS.md envelheceu
+
+Levantado em 25/08/2026 e não revisado desde então. Pontos que já não batem:
+
+- Diz "50 peças cadastradas, 29 em Casamento no civil e 21 em Festa". Hoje são
+  240 peças e seis coleções.
+- Cobra confirmação de quatro selos da página de peça com textos que desde
+  então foram reescritos (ver `lib/selos.ts`, que registra três confirmados e um
+  em aberto). São cinco selos agora.
+- Diz que o site afirma sinal de 50%. A página da peça hoje diz 40%.
+- Pede depoimentos porque havia quatro inventados no ar. Precisa conferir o que
+  está publicado hoje antes de pedir de novo.
+
+Refazer a passagem item por item contra o banco e o site antes de mandar
+qualquer coisa para ela. O risco de não fazer é dos dois lados: pedir duas
+vezes a mesma coisa, ou parar de pedir algo que ainda falta.
+
+---
+
 # Versão 2, fora do escopo atual
 
 Registrado aqui para não virar pedido informal no meio da execução.
