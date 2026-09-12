@@ -43,8 +43,9 @@ export default async function ComoFuncionaPage() {
           Como funciona
         </Heading>
         <p className="text-base leading-base text-ink-muted">
-          Do primeiro contato à devolução, em seis passos. Qualquer dúvida no
-          meio do caminho, é só chamar no WhatsApp.
+          Do primeiro contato à devolução, em seis passos. Todas as peças são
+          feitas por nós, aqui no ateliê. Qualquer dúvida no meio do caminho,
+          é só chamar no WhatsApp.
         </p>
       </header>
 

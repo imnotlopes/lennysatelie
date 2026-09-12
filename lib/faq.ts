@@ -39,6 +39,14 @@ export const FAQ: GrupoFaq[] = [
         ],
       },
       {
+        id: "confeccao",
+        pergunta: "Os vestidos são feitos por vocês?",
+        resposta: [
+          "São. Os nossos vestidos foram feitos inteiramente por nós, cada detalhe e cada ponto.",
+          "Isso vale para o acervo inteiro: a peça que você provar aqui saiu da nossa confecção.",
+        ],
+      },
+      {
         id: "tamanhos",
         pergunta: "Quais tamanhos vocês atendem?",
         resposta: [
@@ -49,7 +57,7 @@ export const FAQ: GrupoFaq[] = [
         id: "compra",
         pergunta: "Vocês vendem os vestidos ou só alugam?",
         resposta: [
-          "Trabalhamos com aluguel. A exceção é a confecção sob medida, em que a compra pode ser solicitada por interesse da cliente.",
+          "Trabalhamos com aluguel. Como somos nós que confeccionamos, a compra pode ser combinada no caso do vestido feito sob medida.",
         ],
       },
     ],

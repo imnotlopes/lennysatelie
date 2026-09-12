@@ -31,7 +31,7 @@ import { OG_IMAGEM } from "@/lib/seo";
 const TITULO =
   "Acervo | Vestidos de Noiva e de Festa para Alugar | Lennys Ateliê";
 const DESCRICAO =
-  "Vestidos de noiva, cerimônia, casamento civil, debutante e festa para alugar no Lennys Ateliê, em Jandira, SP. Filtre por coleção, cor, tamanho e preço.";
+  "Vestidos de noiva, cerimônia, casamento civil, debutante e festa no Lennys Ateliê, em Jandira, SP. Todos feitos por nós. Filtre por coleção, cor, tamanho e preço.";
 
 export const metadata: Metadata = {
   title: TITULO,
@@ -92,8 +92,8 @@ export default async function AcervoPage({
             Acervo
           </Heading>
           <p className="max-w-prose text-sm text-ink-muted">
-            {facetas.total} vestidos para alugar. Escolha a peça e a gente
-            combina a data pelo WhatsApp.
+            {facetas.total} vestidos para alugar, todos feitos no nosso
+            ateliê. Escolha a peça e a gente combina a data pelo WhatsApp.
           </p>
         </header>
       )}

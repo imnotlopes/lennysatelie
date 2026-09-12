@@ -127,8 +127,8 @@ export async function Hero() {
         <span aria-hidden="true" className="filete" />
 
         <p className="max-w-md text-sm leading-base text-ink-inverse/85">
-          Noiva, casamento civil, cerimônia e festa. Prova com horário marcado e
-          ajuste feito no seu corpo.
+          Noiva, casamento civil, cerimônia e festa. Todas as peças são feitas
+          aqui no ateliê, com prova marcada e ajuste no seu corpo.
         </p>
 
         <Link

@@ -11,10 +11,11 @@ import { getConfiguracoes } from "@/lib/queries";
 import type { Metadata } from "next";
 import { OG_IMAGEM } from "@/lib/seo";
 import { MapaAtelie } from "@/components/secoes/mapa-atelie";
+import { AvaliacoesGoogle } from "@/components/secoes/avaliacoes-google";
 
 const TITULO = "Aluguel de Vestido de Noiva em Jandira, SP | Lennys Ateliê";
 const DESCRICAO =
-  "Vestidos de noiva, casamento civil e festa para alugar em Jandira, SP. Prova com hora marcada, ajuste incluso e reserva pelo WhatsApp.";
+  "Vestidos de noiva, casamento civil e festa para alugar em Jandira, SP. Feitos no nosso ateliê, com prova marcada, ajuste incluso e reserva pelo WhatsApp.";
 
 export const metadata: Metadata = {
   title: TITULO,
@@ -38,8 +39,8 @@ export const metadata: Metadata = {
 
 /**
  * Home. Server Component: nenhuma das seções precisa de estado no browser.
- * O único componente de cliente da página é o carrossel, usado pelos
- * destaques e pelos depoimentos.
+ * O que roda no browser são dois componentes internos — o carrossel dos
+ * destaques e a esteira das fileiras que giram.
  */
 export default async function HomePage() {
   const { contato } = await getConfiguracoes();
@@ -52,6 +53,7 @@ export default async function HomePage() {
       <Destaques />
       <ComoFunciona />
       <SecaoVideos contato={contato} />
+      <AvaliacoesGoogle />
       <Feedbacks />
       <MapaAtelie contato={contato} />
       <FaixaWhatsapp />

@@ -134,6 +134,23 @@ export function IconeAjustes(props: IconeProps) {
   );
 }
 
+/**
+ * Agulha com linha, para a confecção própria.
+ *
+ * Não reusa a tesoura de `IconeAjustes`: tesoura ali significa ajuste da peça
+ * no corpo da cliente, e o mesmo desenho em dois selos vizinhos diria que as
+ * duas coisas são a mesma.
+ */
+export function IconeAgulha(props: IconeProps) {
+  return (
+    <Base {...props}>
+      <path d="M3.5 20.5 15 9" />
+      <circle cx="16.6" cy="7.4" r="2.3" />
+      <path d="M18.5 6.1c1.6-1.1 3.4-.2 2.9 1.6-.4 1.5-2.4 1.7-3.2.2" />
+    </Base>
+  );
+}
+
 export function IconeFesta(props: IconeProps) {
   return (
     <Base {...props}>
@@ -161,6 +178,27 @@ export function IconeEtiqueta(props: IconeProps) {
     <Base {...props}>
       <path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9-9-9Z" />
       <circle cx="7.5" cy="7.5" r="1.25" />
+    </Base>
+  );
+}
+
+/** Globo: o site. */
+export function IconeGlobo(props: IconeProps) {
+  return (
+    <Base {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18" />
+      <path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18" />
+    </Base>
+  );
+}
+
+/** Envelope: o e-mail. */
+export function IconeEmail(props: IconeProps) {
+  return (
+    <Base {...props}>
+      <rect x="3" y="5" width="18" height="14" rx="1.5" />
+      <path d="m3.8 6.2 7.3 5.5a1.5 1.5 0 0 0 1.8 0l7.3-5.5" />
     </Base>
   );
 }

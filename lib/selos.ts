@@ -1,6 +1,7 @@
 import type { ComponentType, SVGProps } from "react";
 import {
   IconeAgenda,
+  IconeAgulha,
   IconeAjustes,
   IconeDevolucao,
   IconeWhatsapp,
@@ -15,7 +16,11 @@ export interface Selo {
 /**
  * Selos de confiança da página de produto.
  *
- * Três dos quatro foram confirmados pela Lennys por escrito: prova com hora
+ * O primeiro é o que separa o ateliê de uma loja que revende, e por isso abre
+ * a lista: a confecção é própria e vale para o acervo inteiro, confirmado
+ * pela Lennys.
+ *
+ * Dos outros, três foram confirmados por ela por escrito: prova com hora
  * marcada, devolução sem lavar e atendimento a distância (este último
  * reescrito, porque o meu texto prometia mais do que ela faz).
  *
@@ -24,6 +29,11 @@ export interface Selo {
  * certo — que a peça é ajustada — sem afirmar que é de graça.
  */
 export const SELOS: Selo[] = [
+  {
+    icone: IconeAgulha,
+    titulo: "Feito no nosso ateliê",
+    detalhe: "Cada peça do acervo foi confeccionada por nós, ponto a ponto.",
+  },
   {
     icone: IconeAgenda,
     titulo: "Prova com hora marcada",

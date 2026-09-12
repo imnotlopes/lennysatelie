@@ -19,7 +19,7 @@ export function LocalBusinessJsonLd({ contato }: { contato: Contato }) {
     "@type": "ClothingStore",
     name: "Lennys Ateliê",
     description:
-      "Ateliê de aluguel de vestido de noiva, casamento civil, cerimônia e festa em Jandira, São Paulo.",
+      "Ateliê de aluguel de vestido de noiva, casamento civil, cerimônia e festa em Jandira, São Paulo. Todas as peças são confeccionadas no próprio ateliê.",
     url: SITE,
     telephone: `+${contato.whatsapp}`,
     email: contato.email,

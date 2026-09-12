@@ -6,11 +6,13 @@ import { linkWhatsapp } from "@/lib/whatsapp";
 import { SITE } from "@/lib/admin/site";
 import { OG_IMAGEM } from "@/lib/seo";
 import { MapaAtelie } from "@/components/secoes/mapa-atelie";
+import { AvaliacoesGoogle } from "@/components/secoes/avaliacoes-google";
 import { HORARIOS } from "@/lib/horarios";
+import { Parcerias } from "@/components/secoes/parcerias";
 
 const TITULO = "Contato e Endereço em Jandira, SP | Lennys Ateliê";
 const DESCRICAO =
-  "Onde fica o Lennys Ateliê, ateliê de aluguel de vestido de noiva em Jandira, SP: mapa, endereço, telefone, WhatsApp e horário de atendimento.";
+  "Onde fica o Lennys Ateliê, em Jandira, SP: mapa, endereço, telefone, WhatsApp e horário. Confeccionamos também no atacado, para lojas e ateliês.";
 const CAMINHO = "/contato";
 
 export const metadata: Metadata = {
@@ -59,6 +61,8 @@ export default async function ContatoPage() {
           Agendar meu horário
         </a>
       </header>
+
+      <AvaliacoesGoogle semContainer />
 
       <MapaAtelie contato={contato} semCabecalho />
 
@@ -155,6 +159,8 @@ export default async function ContatoPage() {
           </Link>
         </section>
       </div>
+
+      <Parcerias whatsapp={contato.whatsapp} />
     </Container>
   );
 }
