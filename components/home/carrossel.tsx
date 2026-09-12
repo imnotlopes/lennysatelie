@@ -21,7 +21,7 @@ export interface CarrosselProps {
  * mouse e trackpad, e continua navegável por teclado. As setas existem só no
  * desktop, onde não há gesto.
  *
- * É o único componente de cliente da home. Os depoimentos reusam ele.
+ * Usado pelos destaques da home e pelas peças vistas recentemente.
  */
 export function Carrossel({
   rotulo,

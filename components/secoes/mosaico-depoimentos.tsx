@@ -19,12 +19,23 @@ const MS_POR_ITEM = 4000;
  */
 const LUGARES_INICIAIS = 4;
 const LUGARES_DESKTOP = 8;
+/** O bloco de dois da página de links. Mesmo número em qualquer largura. */
+const LUGARES_COMPACTO = 2;
 
 export interface MosaicoDepoimentosProps {
   /** Prints de conversa. Quase quadrados: proporção entre 0,64 e 0,98. */
   mensagens: Midia[];
   /** Stories do ateliê: cliente com a peça, sempre em 9:16. */
   fotos: Midia[];
+  /**
+   * Um bloco de dois, numa fileira só, em qualquer largura.
+   *
+   * Para a página de links, onde a prova é apoio e não assunto: lá a seção
+   * existe para dizer "tem gente falando bem", não para a pessoa ler os
+   * dezenove. Com dois quadros a fila continua girando por todos, então nada
+   * fica inalcançável — só leva mais voltas.
+   */
+  compacto?: boolean;
 }
 
 /**
@@ -52,10 +63,13 @@ export interface MosaicoDepoimentosProps {
 export function MosaicoDepoimentos({
   mensagens,
   fotos,
+  compacto = false,
 }: MosaicoDepoimentosProps) {
   const [atual, setAtual] = useState(0);
   const [parado, setParado] = useState(false);
-  const [lugares, setLugares] = useState(LUGARES_INICIAIS);
+  const [lugares, setLugares] = useState(
+    compacto ? LUGARES_COMPACTO : LUGARES_INICIAIS,
+  );
   const [ampliada, setAmpliada] = useState<Midia | null>(null);
   const menosMovimento = useRef(false);
 
@@ -75,12 +89,14 @@ export function MosaicoDepoimentos({
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    const medir = () =>
+    const medir = () => {
+      if (compacto) return setLugares(LUGARES_COMPACTO);
       setLugares(window.innerWidth >= 1025 ? LUGARES_DESKTOP : LUGARES_INICIAIS);
+    };
     medir();
     window.addEventListener("resize", medir);
     return () => window.removeEventListener("resize", medir);
-  }, []);
+  }, [compacto]);
 
   // Também para enquanto uma imagem está aberta: girar por trás faria outra
   // aparecer no lugar dela assim que fechasse.
@@ -111,7 +127,10 @@ export function MosaicoDepoimentos({
       <ul
         onPointerDown={() => setParado(true)}
         onFocusCapture={() => setParado(true)}
-        className="grid grid-cols-2 gap-3 lg:grid-cols-4"
+        className={cn(
+          "grid grid-cols-2 gap-3",
+          !compacto && "lg:grid-cols-4",
+        )}
       >
         {visiveis.map((item, posicao) => (
           <li key={posicao}>
@@ -129,7 +148,7 @@ export function MosaicoDepoimentos({
                 className={cn(
                   "relative aspect-4/5 w-full overflow-hidden bg-surface-raised",
                   "transition-opacity duration-200 ease-brand hover:opacity-90",
-                  gira && "capa-entrando",
+                  gira && "esteira-entrando",
                 )}
               >
                 <Image

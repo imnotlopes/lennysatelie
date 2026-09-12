@@ -117,6 +117,12 @@
   /* ---- Geometria: cantos vivos, linha fina ---- */
   --radius-none: 0px;
 
+  /* Exceção única: o card de avaliação do Google. Ele reproduz um componente
+     que a visitante já conhece de fora do site, e é justamente o formato
+     reconhecível que faz a prova social funcionar. Canto vivo ali quebraria o
+     reconhecimento. Não use em mais nada. */
+  --radius-google: 12px;
+
   /* ---- Layout ---- */
   --container-content: 1145px;
   --aspect-product: 2 / 3;
@@ -439,21 +445,24 @@
 }
 
 /* ==========================================================================
-   Entrada das capas de coleção
+   Entrada dos itens da esteira
 
-   Quando uma capa toma o lugar de outra na fileira, ela entra em vez de
+   Quando um item toma o lugar de outro na fileira, ele entra em vez de
    simplesmente aparecer. A primeira versão trocava sem passagem nenhuma, e a
    fileira piscava a cada dois segundos.
+
+   Serve as capas de coleção, as avaliações do Google, os vídeos e o mosaico
+   de depoimentos — todas fileiras que giram.
 
    O bloco remonta a cada troca (a chave em React muda), então basta uma
    animação de entrada: não há estado a manter nem transição a coordenar.
    ========================================================================== */
 
-.capa-entrando {
-  animation: capa-entra 0.7s var(--ease-entrada) both;
+.esteira-entrando {
+  animation: esteira-entra 0.7s var(--ease-entrada) both;
 }
 
-@keyframes capa-entra {
+@keyframes esteira-entra {
   from {
     opacity: 0;
     transform: translateX(1.5rem);
@@ -465,8 +474,129 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .capa-entrando {
+  .esteira-entrando {
     animation: none;
+  }
+}
+
+/* ==========================================================================
+   Faixa que desliza sozinha
+
+   Os itens passam devagar, sem começo nem fim visíveis, esmaecendo nas duas
+   pontas. Usada na página de links para as capas de coleção.
+
+   Parada, uma fileira de capas lê como rodapé. Em movimento lento, lê como
+   "tem mais de onde vieram essas" — que é a impressão que interessa em uma
+   página cujo trabalho é fazer a pessoa tocar no acervo.
+   ========================================================================== */
+
+.faixa {
+  position: relative;
+  overflow: hidden;
+
+  /*
+    O esmaecimento das pontas é MÁSCARA, e não dois degradês por cima.
+
+    Degradê chapado só funciona sobre fundo de cor conhecida: bastaria a faixa
+    mudar de seção, ou nascer sobre uma foto, e apareceriam duas manchas nas
+    bordas. A máscara apaga o pixel de verdade, então vale sobre qualquer
+    fundo.
+
+    10% de cada lado: o suficiente para a capa sumir gradualmente em vez de ser
+    cortada ao meio pela borda, que é o que denuncia carrossel.
+  */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+}
+
+.faixa_trilho {
+  display: flex;
+  width: max-content;
+  animation: faixa-desliza linear infinite;
+  will-change: transform;
+}
+
+.faixa_trilho.esta-parada {
+  animation-play-state: paused;
+}
+
+/* Para no hover do mouse. Não substitui o botão, que é o que serve a quem usa
+   toque ou teclado: é cortesia para quem quer olhar uma capa sem persegui-la
+   com o olho. */
+@media (hover: hover) and (pointer: fine) {
+  .faixa:hover .faixa_trilho {
+    animation-play-state: paused;
+  }
+}
+
+.faixa_fileira {
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+}
+
+/*
+  O RESPIRO É PADDING, E NÃO GAP.
+
+  Com `gap`, metade do trilho não é uma cópia inteira da lista: é uma cópia
+  menos meio vão. O laço fecha meio espaço adiantado e a faixa dá um tranco a
+  cada volta, pequeno o bastante para parecer defeito de desempenho e não de
+  cálculo. Com o respiro dentro do item, metade do trilho é exatamente uma
+  cópia.
+*/
+.faixa_item {
+  display: flex;
+  flex-shrink: 0;
+  padding-inline: 0.375rem;
+}
+
+@keyframes faixa-desliza {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  /* Metade do trilho, que é exatamente uma cópia da lista. */
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faixa_trilho {
+    animation: none;
+  }
+
+  /*
+    Parar a animação sozinho esconderia conteúdo: o trilho é mais largo que a
+    tela e `overflow: hidden` corta o que sobra. Quem pediu menos movimento
+    ficaria sem ver metade das coleções, sem nenhuma forma de alcançá-las.
+
+    Com a rolagem liberada, a faixa vira um trilho comum: não anda sozinha e a
+    pessoa passa o dedo. E aí a segunda cópia precisa sair, senão ela rolaria
+    até o fim e encontraria tudo de novo.
+  */
+  .faixa {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .faixa::-webkit-scrollbar {
+    display: none;
+  }
+
+  .faixa_fileira[aria-hidden="true"] {
+    display: none;
   }
 }
 
