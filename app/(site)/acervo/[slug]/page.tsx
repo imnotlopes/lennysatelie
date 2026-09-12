@@ -11,6 +11,7 @@ import { DepoimentosEscritos } from "@/components/secoes/depoimentos-escritos";
 import { SecaoInstagram } from "@/components/secoes/instagram";
 import { ProdutoCard } from "@/components/produto-card";
 import { Container, Heading, Preco } from "@/components/ui";
+import { EtiquetaProduto } from "@/components/etiqueta-produto";
 import { imagemProduto, imagensProduto } from "@/lib/images";
 import {
   getConfiguracoes,
@@ -126,11 +127,17 @@ export default async function ProdutoPage({
 
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
-            {produto.categoria ? (
-              <span className="text-2xs tracking-caps uppercase text-ink-muted">
-                {produto.categoria.nome}
-              </span>
-            ) : null}
+            {/* Etiqueta e categoria dividem a linha acima do nome. A etiqueta
+                vem primeiro porque é o que a cliente acabou de ver no card:
+                reconhecer a mesma marca confirma que chegou na peça certa. */}
+            <div className="flex flex-wrap items-center gap-3">
+              <EtiquetaProduto texto={produto.etiqueta} />
+              {produto.categoria ? (
+                <span className="text-2xs tracking-caps uppercase text-ink-muted">
+                  {produto.categoria.nome}
+                </span>
+              ) : null}
+            </div>
             <Heading as={1} size="display-sm" revelar>
               {produto.nome}
             </Heading>

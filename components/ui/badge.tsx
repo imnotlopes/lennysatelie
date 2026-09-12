@@ -1,13 +1,15 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export type BadgeVariant = "neutral" | "accent" | "success" | "error";
+export type BadgeVariant = "neutral" | "accent" | "success" | "error" | "ink";
 
 const variants: Record<BadgeVariant, string> = {
   neutral: "bg-line text-ink",
   accent: "bg-accent text-ink",
   success: "bg-success text-ink-inverse",
   error: "bg-error text-ink-inverse",
+  /** Sobre foto de produto: precisa vencer qualquer cor de vestido atrás. */
+  ink: "bg-ink text-ink-inverse",
 };
 
 export interface BadgeProps {

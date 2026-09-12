@@ -7,6 +7,7 @@ import {
   imagemProdutoSecundaria,
 } from "@/lib/images";
 import type { CupomPublico, ProdutoComCategoria } from "@/lib/supabase/types";
+import { EtiquetaProduto } from "@/components/etiqueta-produto";
 import { cn } from "@/lib/utils";
 
 export interface ProdutoCardProps {
@@ -43,8 +44,7 @@ export function ProdutoCard({
 }: ProdutoCardProps) {
   const capa = imagemProduto(produto.imagens);
   const segunda = imagemProdutoSecundaria(produto.imagens);
-  const etiqueta = produto.etiqueta?.trim();
-
+  
   return (
     <Link
       href={`/acervo/${produto.slug}`}
@@ -83,11 +83,10 @@ export function ProdutoCard({
           />
         ) : null}
 
-        {etiqueta ? (
-          <span className="absolute top-0 left-0 z-10 bg-ink px-3 py-1.5 text-2xs tracking-caps uppercase text-ink-inverse">
-            {etiqueta}
-          </span>
-        ) : null}
+        <EtiquetaProduto
+          texto={produto.etiqueta}
+          className="absolute top-0 left-0 z-10"
+        />
       </div>
 
       <div className="flex flex-col items-center gap-1 text-center">
