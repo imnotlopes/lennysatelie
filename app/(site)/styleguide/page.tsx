@@ -32,7 +32,7 @@ const PALETTE = [
   { token: "ink-muted", hex: "#7C706E", nome: "Texto de apoio" },
   { token: "ink-faded", hex: "#998F8A", nome: "Preço riscado" },
   { token: "accent", hex: "#D52975", nome: "Ação (placeholder)" },
-  { token: "accent-soft", hex: "#FFAFAF", nome: "Etiqueta, loader" },
+  { token: "accent-soft", hex: "#F8ECE8", nome: "Faixa rosa" },
   { token: "success", hex: "#057555", nome: "Confirmação" },
   { token: "error", hex: "#D01302", nome: "Erro" },
 ];

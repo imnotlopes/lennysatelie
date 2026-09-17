@@ -24,7 +24,11 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     type: "website",
   },
-  twitter: { card: "summary_large_image", title: TITULO, description: DESCRICAO },
+  twitter: {
+    card: "summary_large_image",
+    title: TITULO,
+    description: DESCRICAO,
+  },
 };
 
 /**
@@ -49,80 +53,88 @@ export default async function LinksPage() {
   ]);
 
   return (
-    <main className="mx-auto flex w-full max-w-130 flex-col gap-10 px-4 py-12">
-      <header className="flex flex-col items-center gap-4 text-center">
-        <a
-          href={SITE}
-          className="flex flex-col items-center gap-2 text-ink transition-colors duration-200 ease-brand hover:text-accent-ink"
-        >
-          <span
-            aria-hidden="true"
-            className="marca-simbolo block aspect-102/160 h-12"
-          />
-          <span className="font-display text-display-sm leading-none tracking-default">
-            Lennys Ateliê
+    // Fundo rosa na página inteira, e não só na coluna: `flex-1` estica até o
+    // fim da tela, porque o body do layout raiz é coluna flex de altura cheia.
+    // Sem isso, em tela alta sobraria uma faixa de creme embaixo do rodapé.
+    //
+    // Os cartões continuam brancos por cima. É o contraste entre os dois que
+    // faz o rosa aparecer sem virar uma página cor-de-rosa.
+    <div className="flex-1 bg-accent-soft">
+      <main className="mx-auto flex w-full max-w-130 flex-col gap-10 px-4 py-12">
+        <header className="flex flex-col items-center gap-4 text-center">
+          <a
+            href={SITE}
+            className="flex flex-col items-center gap-2 text-ink transition-colors duration-200 ease-brand hover:text-accent-ink"
+          >
+            <span
+              aria-hidden="true"
+              className="marca-simbolo block aspect-102/160 h-12"
+            />
+            <span className="font-display text-display-sm leading-none tracking-default">
+              Lennys Ateliê
+            </span>
+          </a>
+
+          <span className="text-2xs tracking-caps uppercase text-ink-muted">
+            Jandira · São Paulo
           </span>
-        </a>
 
-        <span className="text-2xs tracking-caps uppercase text-ink-muted">
-          Jandira · São Paulo
-        </span>
-
-        {/* A headline diz o ofício; a linha de baixo é a da Lennys e diz a
+          {/* A headline diz o ofício; a linha de baixo é a da Lennys e diz a
             promessa. Nenhuma palavra se repete entre as duas de propósito —
             "sonho" e "alta costura" moram na frase dela, então a de cima fala
             de molde e ponto. */}
-        <h1 className="font-display text-display-md leading-tight tracking-default text-ink text-balance">
-          Do molde ao último ponto.
-        </h1>
+          <h1 className="font-display text-display-md leading-tight tracking-default text-ink text-balance">
+            Do molde ao último ponto.
+          </h1>
 
-        <p className="max-w-prose text-sm leading-base text-ink-muted text-balance">
-          Seus sonhos transformados em realidade, com a exclusividade da alta
-          costura.
-        </p>
-      </header>
+          <p className="max-w-prose text-sm leading-base text-ink-muted text-balance">
+            Seus sonhos transformados em realidade, com a exclusividade da alta
+            costura.
+          </p>
+        </header>
 
-      {links.length ? (
-        <nav aria-label="Links do ateliê">
-          <ul className="flex flex-col gap-3">
-            {links.map((link) => (
-              <li key={link.id}>
-                <CartaoLink link={link} />
-              </li>
-            ))}
-          </ul>
-        </nav>
-      ) : null}
+        {links.length ? (
+          <nav aria-label="Links do ateliê">
+            <ul className="flex flex-col gap-3">
+              {links.map((link) => (
+                <li key={link.id}>
+                  <CartaoLink link={link} />
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ) : null}
 
-      <FaixaColecoes site={SITE} />
+        <FaixaColecoes site={SITE} />
 
-      {prints.length ? (
-        <section className="flex flex-col gap-4">
-          <h2 className="text-center text-2xs tracking-caps uppercase text-ink-muted">
-            No WhatsApp do ateliê
-          </h2>
-          {/* Os mesmos prints do site, lidos da mesma tabela: ela gerencia num
+        {prints.length ? (
+          <section className="flex flex-col gap-4">
+            <h2 className="text-center text-2xs tracking-caps uppercase text-ink-muted">
+              No WhatsApp do ateliê
+            </h2>
+            {/* Os mesmos prints do site, lidos da mesma tabela: ela gerencia num
               lugar só e eles aparecem nos dois. Aqui num bloco de dois — a
               prova é apoio nesta página, não assunto. */}
-          <MosaicoDepoimentos mensagens={prints} fotos={[]} compacto />
-        </section>
-      ) : null}
+            <MosaicoDepoimentos mensagens={prints} fotos={[]} compacto />
+          </section>
+        ) : null}
 
-      <footer className="flex flex-col items-center gap-5 border-t border-line pt-8 text-center">
-        <RodapeAtalhos links={links} />
+        <footer className="flex flex-col items-center gap-5 border-t border-line pt-8 text-center">
+          <RodapeAtalhos links={links} />
 
-        <div className="flex flex-col items-center gap-1">
-          <a
-            href={SITE}
-            className="text-2xs tracking-caps uppercase text-ink transition-colors duration-200 ease-brand hover:text-accent-ink"
-          >
-            lennysatelie.com.br
-          </a>
-          <span className="text-2xs text-ink-faded">
-            © {new Date().getFullYear()} Lennys Ateliê
-          </span>
-        </div>
-      </footer>
-    </main>
+          <div className="flex flex-col items-center gap-1">
+            <a
+              href={SITE}
+              className="text-2xs tracking-caps uppercase text-ink transition-colors duration-200 ease-brand hover:text-accent-ink"
+            >
+              lennysatelie.com.br
+            </a>
+            <span className="text-2xs text-ink-faded">
+              © {new Date().getFullYear()} Lennys Ateliê
+            </span>
+          </div>
+        </footer>
+      </main>
+    </div>
   );
 }

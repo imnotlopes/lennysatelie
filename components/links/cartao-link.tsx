@@ -30,8 +30,21 @@ export function CartaoLink({ link }: { link: LinkRow }) {
         "group flex min-h-11 items-center gap-4 border px-5 py-4",
         "transition-colors duration-200 ease-brand",
         link.destaque
-          ? "border-ink bg-ink text-ink-inverse hover:bg-ink/90"
-          : "border-line bg-surface-raised text-ink hover:border-ink",
+          ? "border-ink bg-ink text-ink-inverse"
+          : "border-line bg-surface-raised text-ink",
+        // O hover enche de rosé — o mesmo do botão principal do site — e
+        // leva TODO o texto para o escuro. Medido sobre o #EEBAB1: texto escuro
+        // 8.31:1; o branco do cartão preto cairia para 1.71 e o subtítulo cinza
+        // para 3.60, os dois reprovados.
+        //
+        // A borda vira rosa-escuro porque a página também é rosa: cartão rosé
+        // sobre fundo rosa-claro dá 1.48:1 e o contorno sumiria. Com a borda
+        // escura, 4.63:1.
+        //
+        // No foco do teclado, o mesmo: quem navega por Tab merece o mesmo sinal
+        // de "é este" que quem usa mouse.
+        "hover:border-accent-ink hover:bg-accent hover:text-ink",
+        "focus-visible:border-accent-ink focus-visible:bg-accent focus-visible:text-ink",
       )}
     >
       <Icone className="size-5 shrink-0" />
@@ -41,8 +54,12 @@ export function CartaoLink({ link }: { link: LinkRow }) {
         {link.subtitulo ? (
           <span
             className={cn(
-              "text-xs",
+              "text-xs transition-colors duration-200 ease-brand",
               link.destaque ? "text-ink-inverse/75" : "text-ink-muted",
+              // O subtítulo tem cor própria, então não herda o `text-ink` do
+              // hover. Sem esta linha ele ficaria cinza (3.60:1) ou branco
+              // (1.71:1) sobre o rosé.
+              "group-hover:text-ink group-focus-visible:text-ink",
             )}
           >
             {link.subtitulo}

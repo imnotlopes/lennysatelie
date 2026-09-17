@@ -46,7 +46,7 @@ export async function SecaoVideos({ contato }: SecaoVideosProps) {
     : null;
 
   return (
-    <section className="bg-surface-alt">
+    <section className="bg-accent-soft">
       <Container as="section" className="folha gap-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="flex flex-col gap-2">

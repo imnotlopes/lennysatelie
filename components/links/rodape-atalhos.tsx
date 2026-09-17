@@ -39,7 +39,7 @@ export function RodapeAtalhos({ links }: { links: LinkRow[] }) {
                 // folga. Foi o maior que deixa os seis numa fileira só em
                 // telas de 360px: com 55px o último caía sozinho na linha de
                 // baixo, e ícone órfão lê como erro.
-                className="flex size-9 shrink-0 items-center justify-center border border-line text-ink transition-colors duration-200 ease-brand hover:border-ink hover:text-accent-ink"
+                className="flex size-9 shrink-0 items-center justify-center border border-line text-ink transition-colors duration-200 ease-brand hover:border-accent-ink hover:bg-accent hover:text-ink focus-visible:border-accent-ink focus-visible:bg-accent focus-visible:text-ink"
               >
                 <Icone className="size-5" />
               </a>

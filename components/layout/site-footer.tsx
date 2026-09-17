@@ -27,11 +27,15 @@ export async function SiteFooter() {
   const linkRodape =
     "flex min-h-9 items-center text-xs text-ink-muted transition-colors duration-200 ease-brand hover:text-accent-ink sm:min-h-0";
   const social =
-    "flex size-9 items-center justify-center border border-line-strong text-ink transition-colors duration-200 ease-brand hover:border-accent hover:text-accent-ink";
+    // O hover antigo só pintava a borda de rosé: sobre o rodapé rosa isso dá
+    // 1.48:1 e o quadrado parecia não reagir. Agora enche de rosé com borda
+    // rosa-escura (4.63:1) e ícone escuro (8.31:1) — o mesmo hover da página
+    // de links.
+    "flex size-9 items-center justify-center border border-line-strong text-ink transition-colors duration-200 ease-brand hover:border-accent-ink hover:bg-accent hover:text-ink focus-visible:border-accent-ink focus-visible:bg-accent focus-visible:text-ink";
   const ano = new Date().getFullYear();
 
   return (
-    <footer className="mt-auto border-t border-line bg-surface-alt">
+    <footer className="mt-auto border-t border-line bg-accent-soft">
       <Container className="grid gap-8 py-12 md:grid-cols-3">
         <div className="flex flex-col gap-3">
           <Logo />

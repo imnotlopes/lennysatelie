@@ -7,7 +7,7 @@ export async function FaixaWhatsapp() {
   const { contato } = await getConfiguracoes();
 
   return (
-    <section className="bg-surface-alt">
+    <section className="bg-accent-soft">
       <div className="mx-auto flex w-full max-w-content flex-col items-center gap-4 px-4 py-12 text-center lg:px-12">
         <Heading as={2} size="display-sm" revelar>
           Não consegue vir até o ateliê?

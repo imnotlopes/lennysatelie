@@ -38,6 +38,20 @@
      texto escuro por cima (8.31:1). */
   --rose-deep: #816460;
 
+  /* ---- Rose claro ----
+     Faixa e bloco em rosa, pedido da Lennys: mais da paleta dela no site, sem
+     exagero.
+
+     20% do #EEBAB1 sobre o creme, e o número não foi escolhido no olho. É o
+     tom mais rosado em que nenhum token de texto piora de nível: a 25% o
+     rose-deep em texto cai para 4.49:1 e reprova AA. Contra o areia que ele
+     substitui nas faixas, o contraste de todo texto fica igual ou melhor.
+
+     Medido, sobre este fundo: ink 12.27, ink-60 5.31, rose-deep 4.63. O ink-40
+     dá 2.71, abaixo de AA — mas já reprovava no creme (2.96) e no areia (2.65),
+     e só aparece em texto decorativo: copyright e preço riscado. */
+  --rose-soft: #f8ece8;
+
   /* ---- Estado ---- */
   --state-success: #3f6b52;
   --state-error: #a3352b;
@@ -64,7 +78,7 @@
      contraste, por isso sao dois tokens e nao um. */
   --color-accent: var(--rose);
   --color-accent-ink: var(--rose-deep);
-  --color-accent-soft: var(--cream-alt);
+  --color-accent-soft: var(--rose-soft);
 
   /* ---- Estado ---- */
   --color-success: var(--state-success);
@@ -635,7 +649,9 @@
    título deixa de flutuar sobre o texto e passa a encabeçá-lo. */
 .filete {
   display: block;
-  height: 1px;
+  /* Dois pixels. Com um, o rosa sobre o creme dava 1.6:1 e o traço sumia —
+     era a única aparição do rosa em quase todo título do site, e ninguém via. */
+  height: 2px;
   width: 3.5rem;
   background-color: var(--color-accent);
 }
