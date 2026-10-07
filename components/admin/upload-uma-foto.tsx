@@ -3,9 +3,9 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { estilosBotao } from "@/components/ui";
-import { comprimirImagem, tamanhoLegivel } from "@/lib/admin/comprimir-imagem";
+import { tamanhoLegivel } from "@/lib/admin/comprimir-imagem";
+import { enviarFoto } from "@/lib/admin/enviar-foto";
 import { urlDaMidia } from "@/lib/images";
-import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
 export interface UploadUmaFotoProps {
@@ -24,9 +24,9 @@ export interface UploadUmaFotoProps {
  * Irmão menor do `UploadFotos`, que cuida da lista ordenada de fotos da peça.
  * Aqui cada linha tem uma imagem, então lista e reordenação só atrapalhariam.
  *
- * Reaproveita a mesma compressão do outro: a foto sai do celular com 4MB e
- * chega ao bucket com algumas centenas de KB, sem a dona precisar saber o que
- * é redimensionar.
+ * Reaproveita o mesmo envio do outro (`enviarFoto`): a foto sai do celular
+ * com 4MB e chega ao bucket em webp, com algumas centenas de KB, sem a dona
+ * precisar saber o que é redimensionar.
  *
  * Grava em `site/` e não em `produtos/` para as imagens do site não se
  * misturarem com as do acervo na hora de olhar o bucket.
@@ -49,31 +49,11 @@ export function UploadUmaFoto({
 
     setEnviando(true);
     try {
-      const comprimida = await comprimirImagem(arquivo);
-      // A extensão e o tipo vêm do que foi REALMENTE gerado. Antes eram
-      // fixos em webp, e quando a compressão caía para outro formato — no
-      // Safari do iPhone, que não gera webp — subia um PNG chamado `.webp`,
-      // servido como `image/webp`. Achado na auditoria.
-      const caminho = `site/${crypto.randomUUID()}.${comprimida.formato}`;
-
-      const supabase = createClient();
-      const { error } = await supabase.storage
-        .from("produtos")
-        .upload(caminho, comprimida.arquivo, {
-          contentType: comprimida.arquivo.type,
-          upsert: false,
-        });
-
-      URL.revokeObjectURL(comprimida.previewUrl);
-
-      if (error) {
-        aoAvisar("Não foi possível enviar a imagem.", "erro");
-      } else {
-        aoMudar(caminho);
-        aoAvisar(
-          `Imagem enviada: ${tamanhoLegivel(comprimida.bytesOriginais)} viraram ${tamanhoLegivel(comprimida.bytesFinais)}.`,
-        );
-      }
+      const foto = await enviarFoto(arquivo, "site");
+      aoMudar(foto.caminho);
+      aoAvisar(
+        `Imagem enviada: ${tamanhoLegivel(foto.bytesOriginais)} viraram ${tamanhoLegivel(foto.bytesFinais)}.`,
+      );
     } catch (erro) {
       aoAvisar(
         erro instanceof Error ? erro.message : "Falha ao preparar a imagem.",

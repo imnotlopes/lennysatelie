@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath, updateTag } from "next/cache";
+import { converterParaWebp } from "@/lib/admin/converter-webp";
 import { createClient } from "@/lib/supabase/server";
 import type { TipoMidia } from "@/lib/supabase/types";
 import type { ResultadoAcao } from "./admin-produtos";
@@ -93,19 +94,22 @@ export async function buscarCapaDoReel(
       return { ok: false, erro: "Não conseguimos baixar a capa do vídeo." };
     }
 
-    const bytes = new Uint8Array(await imagem.arrayBuffer());
-    const tipo = imagem.headers.get("content-type") ?? "image/jpeg";
-    const extensao = tipo.includes("png")
-      ? "png"
-      : tipo.includes("webp")
-        ? "webp"
-        : "jpg";
-    const caminho = `site/reel-${crypto.randomUUID()}.${extensao}`;
+    // Sai em webp, como toda imagem do site. O Instagram entrega JPEG.
+    let webp: Buffer;
+    try {
+      webp = await converterParaWebp(await imagem.arrayBuffer());
+    } catch {
+      return {
+        ok: false,
+        erro: "A capa desse vídeo veio com defeito. Tente de novo, ou envie uma imagem pelo botão Escolher imagem.",
+      };
+    }
+    const caminho = `site/reel-${crypto.randomUUID()}.webp`;
 
     const supabase = await createClient();
     const { error } = await supabase.storage
       .from("produtos")
-      .upload(caminho, bytes, { contentType: tipo, upsert: false });
+      .upload(caminho, webp, { contentType: "image/webp", upsert: false });
 
     if (error) {
       return { ok: false, erro: "Não foi possível guardar a capa." };

@@ -49,6 +49,10 @@ O site reduz o tamanho de cada foto sozinho — você não precisa preparar nada
 antes. Uma foto de 5 MB vira algo em torno de 300 kB sem perder qualidade na
 tela.
 
+Pode mandar foto em JPG, PNG ou WEBP, do celular ou do computador. Todas
+viram o mesmo formato leve no site, qualquer que seja o aparelho. Vale também
+para as capas das coleções e para as imagens da página inicial.
+
 **A primeira foto é a capa.** É ela que aparece na lista de vestidos e quando
 alguém compartilha o link. Para trocar a capa, arraste outra foto para o
 primeiro lugar, ou use as setinhas embaixo de cada uma.

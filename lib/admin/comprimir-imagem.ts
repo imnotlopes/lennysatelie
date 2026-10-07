@@ -21,6 +21,10 @@
  *   - quando webp falha, cai para JPEG, que todo navegador sabe gerar — e não
  *     para o arquivo original;
  *   - quem decide a extensão e o tipo é o que foi REALMENTE gerado.
+ *
+ * O JPEG daqui não é o fim da linha: quem envia chama a conversão do servidor
+ * logo depois, e a foto termina em webp de qualquer jeito. Ver
+ * `lib/admin/enviar-foto.ts`.
  */
 
 /** Teto de pixels: cabe uma foto 9:16 com 1600 de altura, com folga. */
@@ -30,10 +34,15 @@ export const QUALIDADE = 0.82;
 /** Acima disto o envio é recusado, com explicação. */
 export const BYTES_MAXIMOS = 25 * 1024 * 1024;
 
+/**
+ * Webp que já chega pronto sobe como está, se couber aqui e no teto de
+ * pixels: recomprimir só perderia qualidade numa segunda passada. Acima
+ * disto provavelmente é um webp sem perdas, e vale reduzir.
+ */
+export const BYTES_WEBP_PRONTO = 1024 * 1024;
+
 export interface FotoComprimida {
   arquivo: File;
-  /** Para mostrar no preview sem subir nada. Lembre de revogar depois. */
-  previewUrl: string;
   bytesOriginais: number;
   bytesFinais: number;
   /** "webp" ou "jpeg" — é o que o envio usa para nomear e declarar o tipo. */
@@ -56,6 +65,20 @@ function carregarImagem(arquivo: File): Promise<HTMLImageElement> {
   });
 }
 
+/**
+ * Confere a assinatura do arquivo, e não o nome nem o tipo declarado.
+ *
+ * O tipo que o navegador informa vem da extensão: um PNG renomeado para
+ * `.webp` se declara webp. Subir isso como está repetiria o defeito descrito
+ * no topo deste arquivo. Todo webp começa com `RIFF....WEBP`.
+ */
+async function ehWebpDeVerdade(arquivo: File): Promise<boolean> {
+  const cabecalho = new Uint8Array(await arquivo.slice(0, 12).arrayBuffer());
+  const trecho = (inicio: number, fim: number) =>
+    String.fromCharCode(...cabecalho.slice(inicio, fim));
+  return trecho(0, 4) === "RIFF" && trecho(8, 12) === "WEBP";
+}
+
 /** Tenta um formato; devolve `null` quando o navegador não sabe gerá-lo. */
 function tentarFormato(
   canvas: HTMLCanvasElement,
@@ -73,6 +96,8 @@ function tentarFormato(
 /**
  * Reduz a foto e converte para webp, ou JPEG onde webp não existir.
  *
+ * Aceita JPG, PNG e webp. Webp que já está no tamanho certo passa direto.
+ *
  * Só lança quando não dá para seguir: arquivo que não é imagem, imagem que o
  * navegador não abre, ou nenhum dos dois formatos disponível. Nesses casos a
  * tela mostra a mensagem — é melhor que subir um arquivo mentindo o formato.
@@ -88,10 +113,23 @@ export async function comprimirImagem(arquivo: File): Promise<FotoComprimida> {
   }
 
   const img = await carregarImagem(arquivo);
+  const pixels = img.naturalWidth * img.naturalHeight;
+
+  if (
+    pixels <= PIXELS_MAXIMOS &&
+    arquivo.size <= BYTES_WEBP_PRONTO &&
+    (await ehWebpDeVerdade(arquivo))
+  ) {
+    return {
+      arquivo,
+      bytesOriginais: arquivo.size,
+      bytesFinais: arquivo.size,
+      formato: "webp",
+    };
+  }
 
   // Escala pelo total de pixels, e não pela largura: foto de celular em pé
   // passava no teste de largura e continuava enorme.
-  const pixels = img.naturalWidth * img.naturalHeight;
   const escala = Math.min(1, Math.sqrt(PIXELS_MAXIMOS / pixels));
   const largura = Math.max(1, Math.round(img.naturalWidth * escala));
   const altura = Math.max(1, Math.round(img.naturalHeight * escala));
@@ -111,8 +149,15 @@ export async function comprimirImagem(arquivo: File): Promise<FotoComprimida> {
   let blob = await tentarFormato(canvas, "image/webp");
 
   if (!blob) {
-    // Caminho do iPhone antigo: Safari não gera webp. JPEG todo navegador
-    // gera, e um JPEG honesto é melhor que um PNG fingindo ser webp.
+    // Caminho do Safari, que não gera webp. JPEG todo navegador gera, e um
+    // JPEG honesto é melhor que um PNG fingindo ser webp.
+    //
+    // JPEG não tem transparência: o que era transparente num PNG sairia
+    // preto. Pinta branco por trás do que já foi desenhado antes de gerar.
+    ctx.globalCompositeOperation = "destination-over";
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, largura, altura);
+
     formato = "jpeg";
     blob = await tentarFormato(canvas, "image/jpeg");
   }
@@ -128,7 +173,6 @@ export async function comprimirImagem(arquivo: File): Promise<FotoComprimida> {
 
   return {
     arquivo: comprimido,
-    previewUrl: URL.createObjectURL(comprimido),
     bytesOriginais: arquivo.size,
     bytesFinais: comprimido.size,
     formato,

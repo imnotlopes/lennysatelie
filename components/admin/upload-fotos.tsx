@@ -3,11 +3,8 @@
 import Image from "next/image";
 import { useCallback, useRef, useState } from "react";
 import { estilosBotao } from "@/components/ui";
-import { createClient } from "@/lib/supabase/client";
-import {
-  comprimirImagem,
-  tamanhoLegivel,
-} from "@/lib/admin/comprimir-imagem";
+import { tamanhoLegivel } from "@/lib/admin/comprimir-imagem";
+import { enviarFoto } from "@/lib/admin/enviar-foto";
 import { imagensProduto } from "@/lib/images";
 import { cn } from "@/lib/utils";
 
@@ -51,36 +48,19 @@ export function UploadFotos({ valor, aoMudar, aoAvisar }: UploadFotosProps) {
       }
 
       setEnviando(imagens.map((a) => ({ nome: a.name, progresso: 0 })));
-      const supabase = createClient();
       const novos: string[] = [];
 
       for (const [indice, arquivo] of imagens.entries()) {
         try {
-          const comprimida = await comprimirImagem(arquivo);
-          setEnviando((atual) =>
-            atual.map((e, i) => (i === indice ? { ...e, progresso: 50 } : e)),
+          const foto = await enviarFoto(arquivo, "produtos", () =>
+            setEnviando((atual) =>
+              atual.map((e, i) => (i === indice ? { ...e, progresso: 50 } : e)),
+            ),
           );
-
-          // Extensão e tipo do que foi realmente gerado — ver a nota em
-          // `upload-uma-foto.tsx`.
-          const caminho = `produtos/${crypto.randomUUID()}.${comprimida.formato}`;
-          const { error } = await supabase.storage
-            .from("produtos")
-            .upload(caminho, comprimida.arquivo, {
-              contentType: comprimida.arquivo.type,
-              upsert: false,
-            });
-
-          URL.revokeObjectURL(comprimida.previewUrl);
-
-          if (error) {
-            aoAvisar(`Não foi possível enviar "${arquivo.name}".`, "erro");
-          } else {
-            novos.push(caminho);
-            aoAvisar(
-              `${arquivo.name}: ${tamanhoLegivel(comprimida.bytesOriginais)} viraram ${tamanhoLegivel(comprimida.bytesFinais)}.`,
-            );
-          }
+          novos.push(foto.caminho);
+          aoAvisar(
+            `${arquivo.name}: ${tamanhoLegivel(foto.bytesOriginais)} viraram ${tamanhoLegivel(foto.bytesFinais)}.`,
+          );
         } catch (erro) {
           aoAvisar(
             erro instanceof Error ? erro.message : "Falha ao preparar a foto.",
@@ -137,7 +117,8 @@ export function UploadFotos({ valor, aoMudar, aoAvisar }: UploadFotosProps) {
           Arraste as fotos para cá, ou escolha do computador.
         </p>
         <p className="text-2xs text-ink-muted">
-          Pode soltar várias de uma vez. Reduzimos o tamanho automaticamente.
+          Pode soltar várias de uma vez, em JPG, PNG ou WEBP. Reduzimos o
+          tamanho automaticamente.
         </p>
 
         <button
