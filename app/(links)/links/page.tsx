@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PixelMeta } from "@/components/analytics/pixel-meta";
 import { CartaoLink } from "@/components/links/cartao-link";
 import { FaixaColecoes } from "@/components/links/faixa-colecoes";
 import { RodapeAtalhos } from "@/components/links/rodape-atalhos";
@@ -135,6 +136,11 @@ export default async function LinksPage() {
           </div>
         </footer>
       </main>
+
+      {/* Esta página é o destino do link da bio e do tráfego pago, então o
+          pixel importa mais aqui do que no site. Ela não usa o layout do
+          site, então o componente precisa ser montado na própria página. */}
+      <PixelMeta />
     </div>
   );
 }

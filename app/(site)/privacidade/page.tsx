@@ -35,9 +35,18 @@ export const metadata: Metadata = {
  *
  * Escrito a partir do que o código faz de fato, não de um modelo genérico:
  * cada afirmação aqui foi conferida no site antes de virar frase. O formulário
- * de reserva não grava nada, a tabela de eventos não guarda identificador
- * nenhum e existe um cookie só. É pouca coisa, e dizer pouco é o correto —
- * política que promete controles que não existem é pior que não ter política.
+ * de reserva não grava nada e a tabela de eventos não guarda identificador
+ * nenhum. Política que promete controles que não existem é pior que não ter
+ * política.
+ *
+ * MANTENHA ESTA PÁGINA JUNTO COM O CÓDIGO
+ * ---------------------------------------
+ * Em 05/11/2026 entrou o pixel da Meta, e esta página afirmava quatro coisas
+ * que deixaram de ser verdade no mesmo instante: que o site não usava pixel do
+ * Facebook, que não compartilhava dados com anunciantes, que havia um cookie
+ * só e que o mapa do Google era o único terceiro. Todas foram corrigidas.
+ *
+ * Ao acrescentar qualquer script de terceiro, volte aqui antes de publicar.
  *
  * Em linguagem simples, como o resto do site. Quem lê isto é uma cliente
  * decidindo se manda mensagem, não um departamento jurídico.
@@ -75,11 +84,8 @@ export default async function PrivacidadePage() {
         <ul className="flex list-disc flex-col gap-2 pl-5">
           <li>Não pede cadastro, login nem senha para navegar.</li>
           <li>Não guarda seu nome, telefone ou e-mail em banco de dados.</li>
-          <li>
-            Não usa Google Analytics, pixel do Facebook nem rastreadores de
-            publicidade.
-          </li>
-          <li>Não vende nem compartilha dados com anunciantes.</li>
+          <li>Não usa Google Analytics.</li>
+          <li>Não vende seus dados para ninguém.</li>
         </ul>
       </Bloco>
 
@@ -99,24 +105,28 @@ export default async function PrivacidadePage() {
 
       <Bloco titulo="Cookies">
         <p>
-          Um só, chamado <code className="text-ink">lennys_cupom</code>. Ele
-          aparece apenas se você chega ao site por um link de divulgação com
-          cupom, e guarda o código do cupom por 30 dias para o desconto
-          continuar valendo se você voltar depois.
+          O nosso é um só, chamado{" "}
+          <code className="text-ink">lennys_cupom</code>. Ele aparece apenas se
+          você chega ao site por um link de divulgação com cupom, e guarda o
+          código do cupom por 30 dias para o desconto continuar valendo se você
+          voltar depois. Não guarda quem você é.
         </p>
         <p>
-          Não guarda quem você é. Para removê-lo, basta limpar os cookies do
-          site no seu navegador — o site continua funcionando igual, só sem o
-          desconto aplicado automaticamente.
+          Existe ainda o <code className="text-ink">_fbp</code>, gravado pelo
+          pixel da Meta, explicado logo abaixo.
+        </p>
+        <p>
+          Para remover os dois, basta limpar os cookies do site no seu
+          navegador. O site continua funcionando igual, só sem o desconto
+          aplicado automaticamente.
         </p>
       </Bloco>
 
       <Bloco titulo="O mapa">
         <p>
           Na página inicial e no contato existe um mapa do Google mostrando onde
-          fica o ateliê. É a única coisa de terceiro no site: ao carregar o
-          mapa, seu navegador fala com o Google, que pode registrar esse acesso
-          segundo as regras dele.
+          fica o ateliê. Ao carregar o mapa, seu navegador fala com o Google,
+          que pode registrar esse acesso segundo as regras dele.
         </p>
         <p>
           O mapa só carrega quando você chega perto dele na página. Se você não
@@ -130,6 +140,29 @@ export default async function PrivacidadePage() {
           de WhatsApp foi tocado. O registro guarda o tipo do evento e qual
           vestido — nada que identifique você, nem endereço de internet, nem
           aparelho.
+        </p>
+      </Bloco>
+
+      <Bloco titulo="O pixel da Meta">
+        <p>
+          O ateliê anuncia no Instagram e no Facebook. Para saber se um anúncio
+          deu resultado, o site carrega o pixel da Meta, que avisa a empresa
+          quando alguém que veio de um anúncio chega aqui.
+        </p>
+        <p>
+          Quem recebe esses dados é a Meta, e o que ela faz com eles segue as
+          regras dela, não as nossas. Na prática ela registra a visita, o
+          endereço da página e o cookie{" "}
+          <code className="text-ink">_fbp</code>, que serve para reconhecer o
+          mesmo navegador numa visita futura. Nós não mandamos para ela o seu
+          nome, telefone nem e-mail, porque o site não pede nada disso em
+          momento nenhum.
+        </p>
+        <p>
+          Para não ser medida, você pode bloquear cookies de terceiros no seu
+          navegador, usar uma extensão de bloqueio ou ajustar as preferências de
+          anúncio na sua própria conta do Facebook ou do Instagram. O site
+          continua funcionando normalmente.
         </p>
       </Bloco>
 
