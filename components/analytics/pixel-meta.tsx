@@ -1,4 +1,5 @@
 import Script from "next/script";
+import { ContatoWhatsapp } from "@/components/analytics/contato-whatsapp";
 
 /**
  * Pixel da Meta, para medir o tráfego pago.
@@ -64,6 +65,11 @@ fbq('track', 'PageView');`}
           src={`https://www.facebook.com/tr?id=${ID}&ev=PageView&noscript=1`}
         />
       </noscript>
+
+      {/* Mede o clique em qualquer botão de WhatsApp da página. Fica aqui
+          dentro de propósito: onde houver pixel, há medição, e não existe o
+          caso de alguém montar um sem o outro. */}
+      <ContatoWhatsapp />
     </>
   );
 }
