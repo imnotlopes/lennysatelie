@@ -7,7 +7,8 @@ import { Selos } from "@/components/produto/selos";
 import { Galeria } from "@/components/produto/galeria";
 import { RegistrarVisita } from "@/components/produto/registrar-visita";
 import { VistosRecentemente } from "@/components/produto/vistos-recentemente";
-import { DepoimentosEscritos } from "@/components/secoes/depoimentos-escritos";
+import { AvaliacoesGoogle } from "@/components/secoes/avaliacoes-google";
+import { Feedbacks } from "@/components/secoes/feedbacks";
 import { SecaoInstagram } from "@/components/secoes/instagram";
 import { ProdutoCard } from "@/components/produto-card";
 import { Container, Heading, Preco } from "@/components/ui";
@@ -195,7 +196,8 @@ export default async function ProdutoPage({
           primeiro do que ja olhou. Some sozinha na primeira visita. */}
       <VistosRecentemente slugAtual={produto.slug} cupom={cupom} />
 
-      <DepoimentosEscritos semContainer />
+      <AvaliacoesGoogle semContainer />
+      <Feedbacks semContainer />
 
       <SecaoInstagram contato={contato} semContainer />
     </Container>

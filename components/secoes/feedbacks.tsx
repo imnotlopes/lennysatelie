@@ -14,7 +14,9 @@ import { getMidias } from "@/lib/queries";
  * empilhar todos. O tamanho de cada lugar segue o conteúdo — ver
  * `MosaicoDepoimentos`.
  */
-export async function Feedbacks() {
+export async function Feedbacks({
+  semContainer = false,
+}: { semContainer?: boolean }) {
   const [mensagens, fotos] = await Promise.all([
     getMidias("feedback_mensagem"),
     getMidias("feedback_imagem"),
@@ -22,26 +24,36 @@ export async function Feedbacks() {
 
   if (!mensagens.length && !fotos.length) return null;
 
+  const conteudo = (
+    <>
+      <div className="flex flex-col gap-2">
+        <Heading
+          as={2}
+          size="display-sm"
+          revelar
+          rotulo="Quem já vestiu"
+          filete
+        >
+          O que elas dizem depois
+        </Heading>
+        <p className="max-w-prose text-xs text-ink-muted">
+          Mensagens que chegaram no WhatsApp do ateliê e publicações do nosso
+          Instagram, com autorização de cada cliente.
+        </p>
+      </div>
+
+      <MosaicoDepoimentos mensagens={mensagens} fotos={fotos} />
+    </>
+  );
+
+  if (semContainer) {
+    return <section className="flex flex-col gap-6">{conteudo}</section>;
+  }
+
   return (
     <div>
       <Container as="section" className="folha gap-6">
-        <div className="flex flex-col gap-2">
-          <Heading
-            as={2}
-            size="display-sm"
-            revelar
-            rotulo="Quem já vestiu"
-            filete
-          >
-            O que elas dizem depois
-          </Heading>
-          <p className="max-w-prose text-xs text-ink-muted">
-            Mensagens que chegaram no WhatsApp do ateliê e publicações do nosso
-            Instagram, com autorização de cada cliente.
-          </p>
-        </div>
-
-        <MosaicoDepoimentos mensagens={mensagens} fotos={fotos} />
+        {conteudo}
       </Container>
     </div>
   );

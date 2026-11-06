@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Clarity } from "@/components/analytics/clarity";
 import { PixelMeta } from "@/components/analytics/pixel-meta";
 import { BannerCupom } from "@/components/cupom/banner-cupom";
 import { ObservadorRevelacao } from "@/components/efeitos/observador-revelacao";
@@ -49,6 +50,7 @@ export default async function SiteLayout({
       <SiteFooter />
       <WhatsappFloat href={linkWhatsapp(contato.whatsapp)} />
       <PixelMeta />
+      <Clarity />
     </>
   );
 }

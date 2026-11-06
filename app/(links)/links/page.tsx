@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Clarity } from "@/components/analytics/clarity";
 import { PixelMeta } from "@/components/analytics/pixel-meta";
 import { CartaoLink } from "@/components/links/cartao-link";
 import { FaixaColecoes } from "@/components/links/faixa-colecoes";
@@ -141,6 +142,7 @@ export default async function LinksPage() {
           pixel importa mais aqui do que no site. Ela não usa o layout do
           site, então o componente precisa ser montado na própria página. */}
       <PixelMeta />
+      <Clarity />
     </div>
   );
 }

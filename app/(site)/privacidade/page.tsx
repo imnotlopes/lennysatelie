@@ -62,7 +62,8 @@ export default async function PrivacidadePage() {
         </Heading>
         <p className="text-sm leading-base text-ink-muted">
           Este site foi feito para mostrar vestidos e levar a conversa para o
-          WhatsApp. Ele coleta muito pouco, e esta página diz exatamente o quê.
+          WhatsApp. Esta página explica os dados usados pelo site e pelas
+          ferramentas de análise de navegação.
         </p>
       </header>
 
@@ -113,10 +114,13 @@ export default async function PrivacidadePage() {
         </p>
         <p>
           Existe ainda o <code className="text-ink">_fbp</code>, gravado pelo
-          pixel da Meta, explicado logo abaixo.
+          pixel da Meta, explicado logo abaixo. O Microsoft Clarity também
+          pode usar cookies, como <code className="text-ink">_clck</code> e{" "}
+          <code className="text-ink">_clsk</code>, para relacionar visitas e
+          interações no mesmo navegador.
         </p>
         <p>
-          Para remover os dois, basta limpar os cookies do site no seu
+          Para remover esses cookies, basta limpar os cookies do site no seu
           navegador. O site continua funcionando igual, só sem o desconto
           aplicado automaticamente.
         </p>
@@ -163,6 +167,27 @@ export default async function PrivacidadePage() {
           navegador, usar uma extensão de bloqueio ou ajustar as preferências de
           anúncio na sua própria conta do Facebook ou do Instagram. O site
           continua funcionando normalmente.
+        </p>
+      </Bloco>
+
+      <Bloco titulo="Microsoft Clarity">
+        <p>
+          Usamos o Microsoft Clarity para entender como as visitantes navegam
+          pelo site, por meio de mapas de calor e reproduções de sessões.
+          Isso nos ajuda a identificar dificuldades e melhorar as páginas.
+        </p>
+        <p>
+          A ferramenta envia à Microsoft informações de navegação, como
+          páginas visitadas, cliques, rolagem e dados técnicos do navegador.
+          Saiba como esses dados são tratados na{" "}
+          <a
+            href="https://privacy.microsoft.com/pt-br/privacystatement"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-ink underline underline-offset-4 hover:text-accent-ink"
+          >
+            Declaração de Privacidade da Microsoft
+          </a>.
         </p>
       </Bloco>
 
