@@ -1,5 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { createPublicClient } from "@/lib/supabase/public";
+import { AVISO_PADRAO, type Aviso } from "@/lib/aviso";
 import type { Json } from "@/lib/supabase/types";
 
 export interface Contato {
@@ -21,6 +22,8 @@ export interface WhatsappTemplate {
 export interface Configuracoes {
   contato: Contato;
   whatsappTemplate: WhatsappTemplate;
+  /** A faixa do topo. Ver `lib/aviso.ts` para a regra de quando aparece. */
+  aviso: Aviso;
 }
 
 /**
@@ -41,6 +44,10 @@ const PADRAO: Configuracoes = {
   whatsappTemplate: {
     mensagem: "Oi! Vi o {produto} no site e queria saber sobre a locação. {link}",
   },
+  // Desligado no padrão de propósito: se a leitura falhar, o site fica sem a
+  // faixa, que é o estado inofensivo. O contrário seria anunciar uma promoção
+  // encerrada por causa de um erro de banco.
+  aviso: AVISO_PADRAO,
 };
 
 function comoObjeto(valor: Json | undefined): Record<string, unknown> {
@@ -66,6 +73,7 @@ async function lerConfiguracoes(): Promise<Configuracoes> {
     const porChave = new Map((data ?? []).map((l) => [l.chave, l.valor]));
     const contato = comoObjeto(porChave.get("contato"));
     const template = comoObjeto(porChave.get("whatsapp_template"));
+    const aviso = comoObjeto(porChave.get("aviso"));
 
     return {
       contato: { ...PADRAO.contato, ...contato } as Contato,
@@ -73,6 +81,7 @@ async function lerConfiguracoes(): Promise<Configuracoes> {
         ...PADRAO.whatsappTemplate,
         ...template,
       } as WhatsappTemplate,
+      aviso: { ...PADRAO.aviso, ...aviso } as Aviso,
     };
   } catch (erro) {
     console.error("Falha ao ler configurações:", erro);
@@ -82,7 +91,7 @@ async function lerConfiguracoes(): Promise<Configuracoes> {
 
 /**
  * Lê as configurações que a dona do ateliê edita pelo painel: dados de
- * contato e template da mensagem do WhatsApp.
+ * contato, template da mensagem do WhatsApp e a faixa de aviso do topo.
  *
  * Nunca lança. Campo ausente cai no padrão acima, chave por chave.
  *

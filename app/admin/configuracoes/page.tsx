@@ -1,11 +1,12 @@
 import { FormularioConfiguracoes } from "@/components/admin/formulario-configuracoes";
 import { getConfiguracoes } from "@/lib/queries";
 import { exigirSessao } from "@/lib/admin/sessao";
+import { hojeEmSaoPaulo } from "@/lib/aviso";
 
 export default async function ConfiguracoesPage() {
   await exigirSessao();
 
-  const { contato, whatsappTemplate } = await getConfiguracoes();
+  const { contato, whatsappTemplate, aviso } = await getConfiguracoes();
 
   return (
     <main className="flex flex-col gap-6 p-6 lg:p-8">
@@ -19,6 +20,7 @@ export default async function ConfiguracoesPage() {
       </header>
 
       <FormularioConfiguracoes
+        hoje={hojeEmSaoPaulo()}
         valoresIniciais={{
           whatsapp: contato.whatsapp,
           telefone: contato.telefone,
@@ -27,6 +29,11 @@ export default async function ConfiguracoesPage() {
           instagram: contato.instagram,
           facebook: contato.facebook,
           template: whatsappTemplate.mensagem,
+          avisoAtivo: aviso.ativo,
+          avisoTexto: aviso.texto,
+          avisoLink: aviso.link,
+          avisoInicio: aviso.inicio,
+          avisoFim: aviso.fim,
         }}
       />
     </main>

@@ -3,6 +3,7 @@ import { Clarity } from "@/components/analytics/clarity";
 import { PixelMeta } from "@/components/analytics/pixel-meta";
 import { BannerCupom } from "@/components/cupom/banner-cupom";
 import { ObservadorRevelacao } from "@/components/efeitos/observador-revelacao";
+import { FaixaAviso } from "@/components/layout/faixa-aviso";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { WhatsappFloat } from "@/components/layout/whatsapp-float";
@@ -23,7 +24,7 @@ export default async function SiteLayout({
 }: {
   children: ReactNode;
 }) {
-  const [{ contato }, cupom, colecoes] = await Promise.all([
+  const [{ contato, aviso }, cupom, colecoes] = await Promise.all([
     getConfiguracoes(),
     getCupomAtivo(),
     getCategorias(),
@@ -38,7 +39,9 @@ export default async function SiteLayout({
         Pular para o conteúdo
       </a>
 
-      {cupom ? <BannerCupom cupom={cupom} /> : null}
+      {/* Uma tarja por vez, e o cupom ganha: ele é desconto já aplicado, o
+          aviso é só convite. Ver a nota em `faixa-aviso.tsx`. */}
+      {cupom ? <BannerCupom cupom={cupom} /> : <FaixaAviso aviso={aviso} />}
 
       <SiteHeader colecoes={colecoes} />
 

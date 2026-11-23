@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AplicarCupom } from "@/components/cupom/aplicar-cupom";
+import { NotaAviso } from "@/components/layout/faixa-aviso";
 import { Reserva } from "@/components/produto/reserva";
 import { Selos } from "@/components/produto/selos";
 import { Galeria } from "@/components/produto/galeria";
@@ -91,7 +92,7 @@ export default async function ProdutoPage({
 
   if (!produto) notFound();
 
-  const [relacionados, { contato, whatsappTemplate }, cupom] =
+  const [relacionados, { contato, whatsappTemplate, aviso }, cupom] =
     await Promise.all([
       getProdutosRelacionados(produto.categoria_id, produto.id),
       getConfiguracoes(),
@@ -157,6 +158,11 @@ export default async function ProdutoPage({
               {produto.descricao}
             </p>
           ) : null}
+
+          {/* Encostada no botão de reservar, que é onde a decisão acontece.
+              Mais acima ela competiria com o preço; mais abaixo, a visitante
+              já teria clicado. */}
+          <NotaAviso aviso={aviso} />
 
           <Reserva
             produto={produto}

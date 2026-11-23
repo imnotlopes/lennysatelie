@@ -6,7 +6,8 @@ import {
   type DadosConfiguracoes,
 } from "@/app/actions/admin-geral";
 import { useToast } from "@/components/admin/toast";
-import { Button, Input, Textarea } from "@/components/ui";
+import { Button, Checkbox, Input, Textarea } from "@/components/ui";
+import { avisoNoAr } from "@/lib/aviso";
 import { SITE } from "@/lib/admin/site";
 import { linkWhatsapp, montarMensagem } from "@/lib/whatsapp";
 import type { ProdutoComCategoria } from "@/lib/supabase/types";
@@ -39,8 +40,18 @@ const VARIAVEIS = [
 
 export function FormularioConfiguracoes({
   valoresIniciais,
+  hoje,
 }: {
   valoresIniciais: DadosConfiguracoes;
+  /**
+   * O dia de hoje em São Paulo, "AAAA-MM-DD", calculado no servidor.
+   *
+   * Vem de fora em vez de sair de `new Date()` aqui porque é o relógio do
+   * servidor que decide se a faixa aparece para a visitante. Usar o relógio
+   * do browser daria um "no ar agora" que concorda com a máquina da Lennys e
+   * discorda do site.
+   */
+  hoje: string;
 }) {
   const { avisar } = useToast();
   const [dados, setDados] = useState(valoresIniciais);
@@ -57,6 +68,17 @@ export function FormularioConfiguracoes({
     url: `${SITE}/acervo/vestido-isla`,
     template: dados.template,
   });
+
+  const avisoNoArAgora = avisoNoAr(
+    {
+      ativo: dados.avisoAtivo,
+      texto: dados.avisoTexto,
+      link: dados.avisoLink,
+      inicio: dados.avisoInicio,
+      fim: dados.avisoFim,
+    },
+    hoje,
+  );
 
   return (
     <form
@@ -179,6 +201,85 @@ export function FormularioConfiguracoes({
           >
             Testar no WhatsApp
           </a>
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-4 border-t border-line pt-6">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-xs font-bold tracking-default text-ink">
+            Faixa de aviso
+          </h2>
+          <p className="text-2xs text-ink-muted">
+            Uma tarja escura no alto de todas as páginas do site e da página de
+            links. Use para avisar de uma promoção, de uma data ou de um
+            recesso. Quem chega por link com cupom vê o cupom no lugar dela.
+          </p>
+        </div>
+
+        <Checkbox
+          id="aviso-ativo"
+          label="Mostrar a faixa no site"
+          checked={dados.avisoAtivo}
+          onChange={(e) => campo("avisoAtivo", e.target.checked)}
+        />
+
+        <Input
+          id="aviso-texto"
+          label="Texto da faixa"
+          hint="Curto, cabe uma linha no celular. Ex.: Nossa Black tem outra condição. Até 30 de novembro."
+          value={dados.avisoTexto}
+          onChange={(e) => campo("avisoTexto", e.target.value)}
+        />
+
+        <Input
+          id="aviso-link"
+          label="Para onde a faixa leva"
+          hint="Endereço completo. Em branco, a faixa só informa e não é clicável."
+          value={dados.avisoLink}
+          onChange={(e) => campo("avisoLink", e.target.value)}
+        />
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Input
+            id="aviso-inicio"
+            type="date"
+            label="Começa em"
+            hint="Em branco, começa assim que você salvar."
+            value={dados.avisoInicio}
+            onChange={(e) => campo("avisoInicio", e.target.value)}
+          />
+          <Input
+            id="aviso-fim"
+            type="date"
+            label="Termina em"
+            hint="O dia escrito aqui ainda aparece. Em branco, não tem fim e você desliga na mão."
+            value={dados.avisoFim}
+            onChange={(e) => campo("avisoFim", e.target.value)}
+          />
+        </div>
+
+        <div className="flex flex-col gap-2 border border-line-strong bg-surface-alt p-4">
+          <span className="text-2xs tracking-caps uppercase text-ink-muted">
+            Como vai aparecer
+          </span>
+
+          {dados.avisoTexto.trim() ? (
+            <div className="bg-ink px-4 py-2 text-center text-ink-inverse">
+              <span className="text-2xs tracking-caps uppercase">
+                {dados.avisoTexto}
+              </span>
+            </div>
+          ) : (
+            <p className="text-2xs text-ink-muted">
+              Escreva o texto acima para ver a faixa aqui.
+            </p>
+          )}
+
+          <p className="text-2xs text-ink-muted">
+            {avisoNoArAgora
+              ? "No ar agora, para quem entrar no site neste momento."
+              : "Fora do ar agora. Confira se a caixa está marcada e se hoje está dentro do período."}
+          </p>
         </div>
       </section>
 

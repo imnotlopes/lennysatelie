@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Clarity } from "@/components/analytics/clarity";
 import { PixelMeta } from "@/components/analytics/pixel-meta";
+import { FaixaAviso } from "@/components/layout/faixa-aviso";
 import { CartaoLink } from "@/components/links/cartao-link";
 import { FaixaColecoes } from "@/components/links/faixa-colecoes";
 import { RodapeAtalhos } from "@/components/links/rodape-atalhos";
 import { MosaicoDepoimentos } from "@/components/secoes/mosaico-depoimentos";
-import { getLinks, getMidias } from "@/lib/queries";
+import { getConfiguracoes, getLinks, getMidias } from "@/lib/queries";
 import { SITE, SITE_LINKS } from "@/lib/admin/site";
 
 const TITULO = "Lennys Ateliê | Vestidos de noiva e de festa em Jandira, SP";
@@ -49,9 +50,10 @@ export const metadata: Metadata = {
  * a mesma coisa, só com margem maior.
  */
 export default async function LinksPage() {
-  const [links, prints] = await Promise.all([
+  const [links, prints, { aviso }] = await Promise.all([
     getLinks(),
     getMidias("feedback_mensagem"),
+    getConfiguracoes(),
   ]);
 
   return (
@@ -62,6 +64,11 @@ export default async function LinksPage() {
     // Os cartões continuam brancos por cima. É o contraste entre os dois que
     // faz o rosa aparecer sem virar uma página cor-de-rosa.
     <div className="flex-1 bg-accent-soft">
+      {/* Aqui a faixa pesa mais que no site: esta página é o destino do link
+          da bio e do tráfego pago, então é a primeira coisa que a maioria vê.
+          Sem banner de cupom nesta página, não há disputa de tarja. */}
+      <FaixaAviso aviso={aviso} />
+
       <main className="mx-auto flex w-full max-w-130 flex-col gap-10 px-4 py-12">
         <header className="flex flex-col items-center gap-4 text-center">
           <a

@@ -5,6 +5,7 @@ import { CapasColecoes } from "@/components/home/capas-colecoes";
 import { CapaColecao } from "@/components/acervo/capa-colecao";
 import { FiltrosMobile } from "@/components/acervo/filtros-mobile";
 import { PainelFiltros } from "@/components/acervo/painel-filtros";
+import { NotaAviso } from "@/components/layout/faixa-aviso";
 import { ProdutoCard } from "@/components/produto-card";
 import { Container, Heading, estilosBotao } from "@/components/ui";
 import {
@@ -63,7 +64,7 @@ export default async function AcervoPage({
 }) {
   const estado = lerEstado(await searchParams);
 
-  const [{ produtos, total }, facetas, { contato }, cupom] = await Promise.all([
+  const [{ produtos, total }, facetas, { contato, aviso }, cupom] = await Promise.all([
     getAcervo(paraFiltros(estado)),
     getFacetas(),
     getConfiguracoes(),
@@ -97,6 +98,11 @@ export default async function AcervoPage({
           </p>
         </header>
       )}
+
+      {/* Entre a abertura e os filtros: é o ponto em que a visitante para de
+          ler e começa a escolher, então o recado chega antes da escolha e não
+          depois dela. */}
+      <NotaAviso aviso={aviso} />
 
       {/* As capas só aparecem no acervo inteiro. Depois que a visitante entra
           numa coleção, quem situa é a CapaColecao acima — repetir a fileira

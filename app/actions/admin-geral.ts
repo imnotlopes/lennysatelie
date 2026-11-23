@@ -135,6 +135,12 @@ export interface DadosConfiguracoes {
   instagram: string;
   facebook: string;
   template: string;
+  avisoAtivo: boolean;
+  avisoTexto: string;
+  avisoLink: string;
+  /** "AAAA-MM-DD", como sai de um input type="date". */
+  avisoInicio: string;
+  avisoFim: string;
 }
 
 export async function salvarConfiguracoes(
@@ -154,6 +160,25 @@ export async function salvarConfiguracoes(
     };
   }
 
+  // Período invertido não é erro de digitação inofensivo: salvo assim, a
+  // faixa simplesmente nunca aparece e a dona fica procurando o defeito no
+  // site. Melhor barrar na hora de salvar, com a frase dizendo o que fazer.
+  const inicio = dados.avisoInicio.trim();
+  const fim = dados.avisoFim.trim();
+  if (inicio && fim && inicio > fim) {
+    return {
+      ok: false,
+      erro: "A data de fim do aviso está antes da data de início. Confira as duas.",
+    };
+  }
+
+  if (dados.avisoAtivo && !dados.avisoTexto.trim()) {
+    return {
+      ok: false,
+      erro: "Escreva o texto do aviso ou desligue a faixa.",
+    };
+  }
+
   const supabase = await createClient();
 
   const linhas = [
@@ -169,6 +194,16 @@ export async function salvarConfiguracoes(
       },
     },
     { chave: "whatsapp_template", valor: { mensagem: dados.template.trim() } },
+    {
+      chave: "aviso",
+      valor: {
+        ativo: dados.avisoAtivo,
+        texto: dados.avisoTexto.trim(),
+        link: dados.avisoLink.trim(),
+        inicio,
+        fim,
+      },
+    },
   ];
 
   const { error } = await supabase.from("configuracoes").upsert(linhas);
